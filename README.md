@@ -6,8 +6,8 @@ Deep neural networks for image-based screening and computer-aided diagnosis have
 ### Requirements
 All the libraries required are in the conda environment `environment.yml`. To install it, follow the instructions below:
 ```
-conda env create -f environment.yml  # install dependencies
-conda activate DiffBiasProxies  # activate environment
+conda env create -f environment.yml   # install dependencies
+conda activate DiffBiasProxies        # activate environment
 ```
 
 ### Experiments
