@@ -15,7 +15,7 @@ conda activate DiffBiasProxies        # activate environment
 - **Tabular**: `run_adult`, `run_bank`, `run_compas`, `run_mimic_iii`
 - **MIMIC-CXR**: `run_mimic_cxr_sex`, `run_mimic_cxr_ethnicity`
 
-To run MIMIC-CXR experiments, first execute the code from https://github.com/USC-Melady/Benchmarking_DL_MIMICIII, to get the pre-processed files.
+To run the MIMIC-III experiment, first execute the code from https://github.com/USC-Melady/Benchmarking_DL_MIMICIII, to get the pre-processed files.
 
 Further details are documented within the code.
 
