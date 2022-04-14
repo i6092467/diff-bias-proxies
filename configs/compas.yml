@@ -1,0 +1,46 @@
+---
+seed: [42, 73, 666, 777, 1009, 1279, 1597, 1811, 1949, 2053, 2129, 2287, 2617, 2741, 2903, 3079, 3257, 3413, 3571, 3727]
+experiment_name: compas_spd
+dataset: compas
+protected: race
+metric: spd
+acc_metric: balanced_accuracy
+modelpath: compas_race
+objective:
+  sharpness: 500.
+  epsilon: 0.05
+models:
+  - default
+  - ROC
+  - EqOdds
+  - random
+  - adversarial
+  - pruning
+  - biasGrad
+random:
+  num_trials: 101
+  stddev: 0.1
+  margin: 0.01
+adversarial:
+  num_deep: 3
+  lr: 0.001
+  epochs: 16
+  critic_steps: 201
+  batch_size: 64
+  actor_steps: 101
+  sharpness: 300.
+  margin: 0.01
+  lambda: 0.75
+pruning:
+  dynamic: true
+  step_size: 1
+  stop_early: true
+  val_only: true
+  obj_lb: 0.55
+biasGrad:
+  lr: 0.00001
+  n_epochs: 200
+  batch_size: 256
+  val_only: true
+  obj_lb: 0.61
+  n_evals: 1

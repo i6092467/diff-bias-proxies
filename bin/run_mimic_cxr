@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+eval "$(conda shell.bash hook)"
+
+conda activate DiffBiasProxies
+
+python ../main_ChestXRay.py --config ../configs/mimic_cxr_sex.yml
+python ../main_ChestXRay.py --config ../configs/mimic_cxr_ethnicity.yml
