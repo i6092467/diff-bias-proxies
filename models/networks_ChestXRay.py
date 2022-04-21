@@ -11,7 +11,7 @@ import torch.nn.functional as F
 
 import numpy as np
 
-from utils.evaluation import compute_bias, compute_accuracy_metrics
+from utils.evaluation import compute_empirical_bias, compute_accuracy_metrics
 
 from torch import nn
 
@@ -246,7 +246,7 @@ def train_ChestXRay_model(dataloaders, dataset_sizes, model, criterion, optimize
             auroc, avg_precision, balanced_acc, f1_acc = compute_accuracy_metrics(probs_mat, preds_vec, labels_vec,
                                                                                   class_names)
             if phase == 'val':
-                bias = compute_bias(preds_vec, labels_vec, priv, bias_metric)
+                bias = compute_empirical_bias(preds_vec, labels_vec, priv, bias_metric)
                 print('Bias:', bias)
             acc = running_corrects.double() / dataset_sizes[phase]
 
