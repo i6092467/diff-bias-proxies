@@ -3,16 +3,11 @@ Utility functions for plotting.
 """
 import os
 
-import json
-
 
 import numpy as np
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
-from matplotlib.patches import Ellipse
-from matplotlib.patches import Patch
-import matplotlib.transforms as transforms
 
 CB_COLOR_CYCLE = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00']
 
@@ -26,9 +21,8 @@ def plotting_setup(font_size=12):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 
 
-def plot_pruning_trajectories_ave(log_dir: str, exp_name: str, seeds: list, n_steps: int,
-                                  objective_name: str, bias_name: str, perf_name: str, dir: str = None,
-                                  legend: bool = False, font_size: int = 16):
+def plot_pruning_trajectories_ave(log_dir: str, exp_name: str, seeds: list, n_steps: int, bias_name: str,
+                                  perf_name: str, dir: str = None, legend: bool = False, font_size: int = 16):
     n_runs = len(seeds)
     objectives = np.zeros((n_runs, n_steps))
     biases = np.zeros((n_runs, n_steps))
@@ -49,10 +43,9 @@ def plot_pruning_trajectories_ave(log_dir: str, exp_name: str, seeds: list, n_st
                         legend=legend, legend_outside=True, cls=CB_COLOR_CYCLE[1:3])
 
 
-def plot_pruning_trajectories_multi(log_dir: str, exp_name: str, seeds: list, n_steps: int,
-                                    objective_name: str, bias_name: str, perf_name: str, dir: str = None,
-                                    legend: bool = False, legend_outside: bool = True, font_size: int = 16,
-                                    xlab: str = None):
+def plot_pruning_trajectories_multi(log_dir: str, exp_name: str, seeds: list, n_steps: int, bias_name: str,
+                                    perf_name: str, dir: str = None, legend: bool = False, legend_outside: bool = True,
+                                    font_size: int = 16, xlab: str = None):
     n_runs = len(seeds)
     objectives = np.ones((n_runs, n_steps)) * 0.5
     biases = np.zeros((n_runs, n_steps))
@@ -66,8 +59,6 @@ def plot_pruning_trajectories_multi(log_dir: str, exp_name: str, seeds: list, n_
     plotting_setup(font_size)
 
     fig = plt.figure(figsize=(8, 6))
-
-    ms = ['D', 'o', '^', 'v', 's', 'X', '*']
 
     cls = CB_COLOR_CYCLE[:3]
 

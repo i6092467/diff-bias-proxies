@@ -11,15 +11,13 @@ import copy
 
 import torch
 from torch import nn
-import torch.nn.functional as F
 from torch import optim
 from torch.utils.data import DataLoader
 
 from sklearn.metrics import balanced_accuracy_score
 
 import utils.data_utils
-from utils.evaluation import (get_objective, get_valid_objective, get_valid_objective_, get_best_thresh,
-                              get_test_objective_)
+from utils.evaluation import (get_objective, get_test_objective_)
 
 import progressbar
 
@@ -101,7 +99,6 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
     pred_performance_ = []
 
     best_model = None
-    best_objective = -1
     j_best = -1
     best_bias = 1
 

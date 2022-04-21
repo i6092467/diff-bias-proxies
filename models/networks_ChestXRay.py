@@ -63,7 +63,13 @@ class ChestXRayVGG16Masked(nn.Module):
         cnt = 0
         cnt_ = 0
         for (i, l) in enumerate(self.all_layers):
+            # Flatten for FC layers
+            if len(t.shape) > 2 and isinstance(l, nn.Linear):
+                t = torch.flatten(t, 1)
+
             t = l(t)
+
+            # If the layer is in the list, prune given units
             if l in self.prunable_layers:
                 if pruned is not None:
                     pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
@@ -86,11 +92,9 @@ class ChestXRayVGG16Masked(nn.Module):
                     else:
                         pass
 
+            # Apply ReLU activation to the VGG features
             if i == len(self.all_layers) - 2:
                 t = torch.relu(t)
-
-            if i == 31:
-                t = torch.flatten(t, 1)
 
         return torch.sigmoid(t)
 
@@ -99,7 +103,13 @@ class ChestXRayVGG16Masked(nn.Module):
         cnt_ = 0
 
         for (i, l) in enumerate(self.all_layers):
+            # Flatten for FC layers
+            if len(t.shape) > 2 and isinstance(l, nn.Linear):
+                t = torch.flatten(t, 1)
+
             t = l(t)
+
+            # If the layer is in the list, prune given units
             if l in self.prunable_layers:
                 if pruned is not None:
                     pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
@@ -122,12 +132,9 @@ class ChestXRayVGG16Masked(nn.Module):
                     else:
                         pass
 
+            # Apply ReLU activation to the VGG features
             if i == len(self.all_layers) - 2:
-                print(l)
                 t = torch.relu(t)
-
-            if i == 31:
-                t = torch.flatten(t, 1)
 
         return t
 

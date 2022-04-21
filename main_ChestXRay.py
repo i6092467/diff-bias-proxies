@@ -21,7 +21,8 @@ from aif360.algorithms.postprocessing import (EqOddsPostprocessing,
                                               RejectOptionClassification)
 from sklearn.metrics import balanced_accuracy_score, accuracy_score, f1_score
 
-from utils.evaluation import (get_valid_objective_, get_test_objective_, evaluate_with_data_loaders, compute_bias)
+from utils.evaluation import (get_valid_objective_, get_test_objective_,
+                              eval_model_w_data_loaders, compute_empirical_bias)
 from utils.data_utils import to_dataframe
 
 from algorithms.pruning import prune
@@ -222,7 +223,7 @@ def main(config):
 
                 rand_model.eval()
 
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=rand_model, device=device, dataloader=dataloaders_rand['val'],
                     dataset_size=dataset_sizes_rand['val'], batch_size=config['default']['batch_size'])
 
@@ -258,11 +259,11 @@ def main(config):
             best_thresh = rand_result[2]
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=best_model, device=device, dataloader=dataloaders_rand['val'],
                     dataset_size=dataset_sizes_rand['val'], batch_size=config['default']['batch_size'])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=best_model, device=device, dataloader=dataloaders_rand['test'],
                     dataset_size=dataset_sizes_rand['test'], batch_size=config['default']['batch_size'])
 
@@ -300,11 +301,11 @@ def main(config):
                                              metric_lb=-config['objective']['epsilon'])
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=model, device=device, dataloader=dataloaders_roc['val'],
                     dataset_size=dataset_sizes_roc['val'], batch_size=config['default']['batch_size'])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=model, device=device, dataloader=dataloaders_roc['test'],
                     dataset_size=dataset_sizes_roc['test'], batch_size=config['default']['batch_size'])
 
@@ -369,11 +370,11 @@ def main(config):
                                       unprivileged_groups=[{config['protected']: 0.}])
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=model, device=device, dataloader=dataloaders_eo['val'],
                     dataset_size=dataset_sizes_eo['val'], batch_size=config['default']['batch_size'])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=model, device=device, dataloader=dataloaders_eo['test'],
                     dataset_size=dataset_sizes_eo['test'], batch_size=config['default']['batch_size'])
 
@@ -473,7 +474,7 @@ def main(config):
                     y_true = y.float().to(device)
                     y_prot = p.float().to(device)
 
-                    bias = compute_bias(y_pred, y_true, y_prot, config['metric'])
+                    bias = compute_empirical_bias(y_pred, y_true, y_prot, config['metric'])
                     res = critic(base_model(X))
                     loss = critic_loss_fn(bias.unsqueeze(0), res[0])
                     loss.backward()
@@ -520,11 +521,11 @@ def main(config):
             best_thresh = best_thresh.cpu().numpy()
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=actor, device=device, dataloader=dataloaders_adv['val'],
                     dataset_size=dataset_sizes_adv['val'], batch_size=config['adversarial']['batch_size'])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=actor, device=device, dataloader=dataloaders_adv['test'],
                     dataset_size=dataset_sizes_adv['test'], batch_size=config['adversarial']['batch_size'])
 
@@ -559,11 +560,11 @@ def main(config):
                                           plot=True, display=False, verbose=1)
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=model_, device=device, dataloader=dataloaders_bgda['val'],
                     dataset_size=dataset_sizes_bgda['val'], batch_size=config['biasGrad']['batch_size'])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=model_, device=device, dataloader=dataloaders_bgda['test'],
                     dataset_size=dataset_sizes_bgda['test'], batch_size=config['biasGrad']['batch_size'])
 
@@ -620,12 +621,12 @@ def main(config):
                                          verbose=1)
 
             with torch.no_grad():
-                valid_pred_scores, y_valid, p_valid = evaluate_with_data_loaders(
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
                     model=model_pruned, device=device, dataloader=dataloaders_pruning['val'],
                     dataset_size=dataset_sizes_pruning['val'], batch_size=config['pruning']['batch_size'],
                     forward_args=[pruned])
 
-                test_pred_scores, y_test, p_test = evaluate_with_data_loaders(
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
                     model=model_pruned, device=device, dataloader=dataloaders_pruning['test'],
                     dataset_size=dataset_sizes_pruning['test'], batch_size=config['pruning']['batch_size'],
                     forward_args=[pruned])

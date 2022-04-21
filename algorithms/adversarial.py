@@ -10,7 +10,7 @@ import torch
 import torch.optim as optim
 
 from models.networks_tabular import load_model, Critic
-from utils.evaluation import get_best_thresh, get_test_objective, get_valid_objective, compute_bias
+from utils.evaluation import get_best_thresh, get_test_objective, get_valid_objective, compute_empirical_bias
 
 logger = logging.getLogger("Debiasing")
 
@@ -42,7 +42,7 @@ def get_best_objective(y_true, y_pred, y_prot, config):
             y_true_tmp = y_true[index]
             y_prot_tmp = y_prot[index]
             perf = (torch.mean((y_pred_tmp > thresh)[y_true_tmp.type(torch.bool)].type(torch.float32)) + torch.mean((y_pred_tmp <= thresh)[~y_true_tmp.type(torch.bool)].type(torch.float32))) / 2
-            bias = compute_bias((y_pred_tmp > thresh).float().cpu(), y_true_tmp.float().cpu(), y_prot_tmp.float().cpu(), config['metric'])
+            bias = compute_empirical_bias((y_pred_tmp > thresh).float().cpu(), y_true_tmp.float().cpu(), y_prot_tmp.float().cpu(), config['metric'])
             objs.append(compute_objective(perf, bias))
         obj = float(torch.tensor(objs).mean())
         if obj > best_obj:
@@ -88,7 +88,7 @@ def adversarial_debiasing(model_state_dict, data, config, device):
             with torch.no_grad():
                 scores = actor(cX_valid)[:, 0].reshape(-1).cpu().numpy()
 
-            bias = compute_bias(scores, cy_valid.numpy(), cp_valid, config['metric'])
+            bias = compute_empirical_bias(scores, cy_valid.numpy(), cp_valid, config['metric'])
 
             res = critic(actor.trunc_forward(cX_valid))
             loss = critic_loss_fn(torch.tensor([bias], device=device).float(), res[0])
@@ -125,7 +125,7 @@ def adversarial_debiasing(model_state_dict, data, config, device):
         if epoch % 1 == 0:
             with torch.no_grad():
                 scores = actor(data.X_valid_gpu)[:, 0].reshape(-1, 1).cpu().numpy()
-                _, best_adv_obj = get_best_thresh(scores, np.linspace(0, 1, 101), data, config, valid=False,
+                _, best_adv_obj = get_best_thresh(scores, np.linspace(0, 1, 101), data, config,
                                                   margin=config['adversarial']['margin'])
                 logger.info(f'Objective: {best_adv_obj}')
 
@@ -133,7 +133,7 @@ def adversarial_debiasing(model_state_dict, data, config, device):
     with torch.no_grad():
         scores = actor(data.X_valid_gpu)[:, 0].reshape(-1, 1).cpu().numpy()
 
-    best_adv_thresh, _ = get_best_thresh(scores, np.linspace(0, 1, 101), data, config, valid=False, margin=config['adversarial']['margin'])
+    best_adv_thresh, _ = get_best_thresh(scores, np.linspace(0, 1, 101), data, config, margin=config['adversarial']['margin'])
 
     logger.info('Evaluating Adversarial model on best threshold.')
     with torch.no_grad():

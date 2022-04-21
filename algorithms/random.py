@@ -37,7 +37,7 @@ def random_debiasing(model_state_dict, data, config, device, verbose=True):
             scores = rand_model(data.X_valid_gpu)[:, 0].reshape(-1).cpu().numpy()
 
         threshs = np.linspace(0, 1, 101)
-        best_rand_thresh, best_obj = get_best_thresh(scores, threshs, data, config, valid=False, margin=config['random']['margin'])
+        best_rand_thresh, best_obj = get_best_thresh(scores, threshs, data, config,  margin=config['random']['margin'])
         if best_obj > rand_result['objective']:
             rand_result = {'objective': best_obj, 'model': copy.deepcopy(rand_model.state_dict()), 'thresh': best_rand_thresh}
             rand_model.eval()
@@ -112,7 +112,7 @@ def random_pruning(model_state_dict, data, config, device, verbose=1):
 
         # Find the best threshold based on the constrained objective
         threshs = np.linspace(0, 1, 101)
-        best_rand_thresh, best_obj = get_best_thresh(scores, threshs, data, config, valid=False,
+        best_rand_thresh, best_obj = get_best_thresh(scores, threshs, data, config,
                                                      margin=config['pruning_random']['margin'])
         if best_obj > rand_result['objective']:
             rand_result = {'objective': best_obj, 'model': copy.deepcopy(rand_model.state_dict()),

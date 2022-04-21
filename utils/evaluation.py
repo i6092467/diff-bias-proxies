@@ -5,12 +5,11 @@ import numpy as np
 
 import torch
 
-from sklearn.preprocessing import label_binarize
 from sklearn.metrics import (average_precision_score, balanced_accuracy_score)
-from sklearn.metrics import confusion_matrix, roc_auc_score, f1_score
+from sklearn.metrics import roc_auc_score, f1_score
 
 
-def compute_bias(y_pred, y_true, priv, metric):
+def compute_empirical_bias(y_pred, y_true, priv, metric):
     def zero_if_nan(x):
         if isinstance(x, torch.Tensor):
             return 0. if torch.isnan(x) else x
@@ -43,26 +42,18 @@ def compute_bias(y_pred, y_true, priv, metric):
         return gtnr_unpriv - gtnr_priv
 
 
-def compute_accuracy_metrics(probs_mat, preds_vec, labels_vec, class_names):
-    # labels
-    labels_mat = label_binarize(labels_vec, classes=range(len(class_names) + 1))
-    labels_mat = labels_mat[:, 0:len(class_names)]
-
+def compute_accuracy_metrics(preds_vec, labels_vec):
+    # AUROC
     roc_auc = roc_auc_score(labels_vec, preds_vec)
 
-    # "micro-average" PR for quantifying score on all classes jointly
-    # precision, recall, _ = precision_recall_curve(labels_mat.ravel(), probs_mat.ravel())
-    # average_precision = average_precision_score(labels_mat, probs_mat, average="micro")
+    # Average precision score
     average_precision = average_precision_score(labels_vec, preds_vec)
 
-    # compute balanced accuracy
+    # Balanced accuracy
     balanced_acc = balanced_accuracy_score(labels_vec, preds_vec)
 
-    # compute balanced accuracy
+    # F1 score
     f1_acc = f1_score(labels_vec, preds_vec)
-
-    # confision matrix
-    cnf = confusion_matrix(labels_vec, preds_vec)
 
     return roc_auc, average_precision, balanced_acc, f1_acc
 
@@ -86,7 +77,7 @@ def threshold_objective_function(bias, performance, epsilon=0.05):
 
 
 def get_objective(y_pred, y_true, priv, metric, sharpness=500., epsilon=0.05, kind='threshold'):
-    bias = compute_bias(y_pred, y_true, priv, metric)
+    bias = compute_empirical_bias(y_pred, y_true, priv, metric)
     performance = balanced_accuracy_score(y_true, y_pred)
     if kind == 'default':
         objective = objective_function(bias, performance, epsilon)
@@ -137,7 +128,7 @@ def get_test_objective_(y_pred, y_test, p_test, config):
                          kind='threshold')
 
 
-def get_best_thresh(scores, threshs, data, config, valid=False, margin=0.00):
+def get_best_thresh(scores, threshs, data, config, margin=0.00):
     objectives = []
     for thresh in threshs:
         valid_objective = get_objective((scores > thresh) * 1., data.y_valid.numpy(), data.p_valid, config['metric'],
@@ -146,7 +137,7 @@ def get_best_thresh(scores, threshs, data, config, valid=False, margin=0.00):
     return threshs[np.argmax(objectives)], np.max(objectives)
 
 
-def evaluate_with_data_loaders(model, device, dataloader, dataset_size: int, batch_size: int, forward_args=None):
+def eval_model_w_data_loaders(model, device, dataloader, dataset_size: int, batch_size: int, forward_args=None):
     val_scores = np.zeros((dataset_size,))
     val_labels = np.zeros((dataset_size,))
     val_prot = np.zeros((dataset_size,))
