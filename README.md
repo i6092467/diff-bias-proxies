@@ -11,13 +11,13 @@ conda activate DiffBiasProxies        # activate environment
 ```
 
 ### Experiments
-`/bin` folder contains shell scripts for the experiments described in the paper:
-- **Tabular**: `run_adult`, `run_bank`, `run_compas`, `run_mimic_iii`
-- **MIMIC-CXR**: `run_mimic_cxr_sex`, `run_mimic_cxr_ethnicity`
+[`/bin`](bin/) folder contains shell scripts for the experiments described in the paper:
+- **Tabular**: [`run_adult`](bin/run_adult), [`run_bank`](bin/run_bank), [`run_compas`](bin/run_compas), [`run_mimic_iii`](bin/run_mimic_iii)
+- **MIMIC-CXR**: [`run_mimic_cxr_sex`](bin/run_mimic_cxr_sex), [`run_mimic_cxr_ethnicity`](bin/run_mimic_cxr_ethnicity)
 
-To run the MIMIC-III experiment, first execute the code from https://github.com/USC-Melady/Benchmarking_DL_MIMICIII, to get the pre-processed files.
+To run the MIMIC-III experiment, first execute the [code](https://github.com/USC-Melady/Benchmarking_DL_MIMICIII) by Sanjay Purushotham, Chuizheng Meng, Zhengping Che, and Yan Liu, to get the pre-processed files.
 
 Further details are documented within the code.
 
 ### Acknowledgements
-The code structure is based on the repository by Yash Savani, Colin White, and Naveen Sundar Govindarajulu available at https://github.com/abacusai/intraprocessing_debiasing.
+The code structure is based on the repository by Yash Savani, Colin White, and Naveen Sundar Govindarajulu available [here](https://github.com/abacusai/intraprocessing_debiasing).
