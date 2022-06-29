@@ -44,7 +44,8 @@ For the experiments on **tabular** data, the configuration should contain the fo
 ```
 seed: [777, 666]                      # list of seeds for replications
 experiment_name: my_experiment        # name of the experiment, for logging purposes
-dataset: bank                         # name of the dataset {adult, bank, compas, mimic, synthetic_loh, synthetic_zafar}
+dataset: bank                         # name of the dataset 
+                                        # {adult, bank, compas, mimic, synthetic_loh, synthetic_zafar}
 protected: age                        # name of the protected attribute
 metric: eod                           # bias measure {spd, eod}
 accc_metric: balanced_accuracy        # performance measure {balanced_accuracy, accuracy, f1_score}
@@ -61,7 +62,7 @@ pruning:                              # pruning parameters
   dynamic: true                       # re-compute neuron influences after every pruning step? {true, false}
   step_size: 1                        # number of units pruned per step
   stop_early: true                    # stop pruning when the performance drops close to random or 
-                                                      # the maximum number of steps is reached? {true, false}
+                                        # the maximum number of steps is reached? {true, false}
   val_only: true                      # perform pruning only on the validation set? {true, false}
   obj_lb: 0.80                        # ϱ parameter, a lower bound on the performance 
 
@@ -78,7 +79,7 @@ For the **chest X-ray** experiments, additional parameters include:
 priv_class: M                         # name of the privileged class of the protected attribute
 unpriv_class: F                       # name of the underprivileged class of the protected attribute
 prot_ratio: 0.75                      # the ratio between privileged and underprivileged 
-                                                                # class frequencies in the training set
+                                        # class frequencies in the training set
 disease: Enlarged Cardiomediastinum   # disease label to be predicted
 num_workers: 2                        # number of loader worker processes for PyTorch data loaders
 
