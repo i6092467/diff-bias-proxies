@@ -64,7 +64,7 @@ pruning:                              # pruning parameters
   dynamic: true                       # re-compute neuron influences after every pruning step? 
                                         # {true, false}
   step_size: 1                        # number of units pruned per step
-  stop_early: true                    # stop pruning when the performance is close to random or 
+  stop_early: true                    # stop when the performance is close to random or 
                                         # the maximum number of steps is reached? 
                                           # {true, false}
   val_only: true                      # perform pruning only on the validation set? 
