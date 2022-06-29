@@ -140,7 +140,7 @@ Further details are documented within the code.
 
 ### 📧 Maintainers
 - [Ričards Marcinkevičs](https://rmarcinkevics.github.io/) ([ricards.marcinkevics@inf.ethz.ch](mailto:ricards.marcinkevics@inf.ethz.ch))
-- [Ece Ozkan](https://mds.inf.ethz.ch/team/detail/ece-oezkan-elsen) ([ricards.marcinkevics@inf.ethz.ch](mailto:ece.oezkanelsen@inf.ethz.ch))
+- [Ece Ozkan](https://mds.inf.ethz.ch/team/detail/ece-oezkan-elsen) ([ece.oezkanelsen@inf.ethz.ch](mailto:ece.oezkanelsen@inf.ethz.ch))
 
 ### 📕 References
 To better understand the background behind this work, we recommend reading the following papers:
