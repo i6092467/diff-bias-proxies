@@ -67,7 +67,8 @@ pruning:                              # pruning parameters
   stop_early: true                    # stop pruning when the performance is close to random or 
                                         # the maximum number of steps is reached? 
                                           # {true, false}
-  val_only: true                      # perform pruning only on the validation set? {true, false}
+  val_only: true                      # perform pruning only on the validation set? 
+                                        # {true, false}
   obj_lb: 0.80                        # ϱ parameter, a lower bound on the performance 
 
 biasGrad:                             # bias gradient descent/ascent parameters
