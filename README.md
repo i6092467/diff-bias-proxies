@@ -55,16 +55,16 @@ modelpath: my_model                   # name of the trained model, for logging p
 dataset_alpha: 2.0                    # α parameter for the synthetic dataset by Loh et al.
 dataset_theta: 0.7                    # θ parameter for the sythetic datatset by Zafar et al.
 
-models:                               # list of models/debiasing procedures to be run             
+models:                               # list of models/debiasing procedures to be run
   - default
   - pruning
   - biasGrad
 
 pruning:                              # pruning parameters
-  dynamic: true                       # re-compute neuron influences after every pruning step? 
+  dynamic: true                       # re-compute neuron influences after every pruning step?
                                         # {true, false}
   step_size: 1                        # number of units pruned per step
-  stop_early: true                    # stop when the performance is close to random or 
+  stop_early: true                    # stop when the performance is close to random or
                                         # the maximum number of steps is reached? 
                                           # {true, false}
   val_only: true                      # perform pruning only on the validation set? 
@@ -75,7 +75,7 @@ biasGrad:                             # bias gradient descent/ascent parameters
   lr: 0.00001                         # learning rate
   n_epochs: 200                       # number of epochs
   batch_size: 256                     # batch size
-  val_only: true                      # perform fine-tuning only on the validation set? 
+  val_only: true                      # perform fine-tuning only on the validation set?
                                         # {true, false}
   obj_lb: 0.70                        # ϱ parameter, a lower bound on the performance
   n_evals: 3                          # number of times to evaluate the model per epoch
