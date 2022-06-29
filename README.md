@@ -52,8 +52,8 @@ metric: eod                           # bias measure {spd, eod}
 accc_metric: balanced_accuracy        # performance measure 
                                         # {balanced_accuracy, accuracy, f1_score}
 modelpath: my_model                   # name of the trained standard model, for logging purposes
-dataset_alpha: 2.0                    # α parameter for the synthetic dataset by Loh et al. (2019)
-dataset_theta: 0.7                    # θ parameter for the sythetic datatset by Zafar et al. (2017)
+dataset_alpha: 2.0                    # α parameter for the synthetic dataset by Loh et al.
+dataset_theta: 0.7                    # θ parameter for the sythetic datatset by Zafar et al.
 
 models:                               # list of models/debiasing procedures to be run             
   - default
