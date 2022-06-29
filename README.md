@@ -45,10 +45,12 @@ For the experiments on **tabular** data, the configuration should contain the fo
 seed: [777, 666]                      # list of seeds for replications
 experiment_name: my_experiment        # name of the experiment, for logging purposes
 dataset: bank                         # name of the dataset 
-                                        # {adult, bank, compas, mimic, synthetic_loh, synthetic_zafar}
+                                        # {adult, bank, compas, mimic, 
+                                          # synthetic_loh, synthetic_zafar}
 protected: age                        # name of the protected attribute
 metric: eod                           # bias measure {spd, eod}
-accc_metric: balanced_accuracy        # performance measure {balanced_accuracy, accuracy, f1_score}
+accc_metric: balanced_accuracy        # performance measure 
+                                        # {balanced_accuracy, accuracy, f1_score}
 modelpath: my_model                   # name of the trained standard model, for logging purposes
 dataset_alpha: 2.0                    # α parameter for the synthetic dataset by Loh et al. (2019)
 dataset_theta: 0.7                    # θ parameter for the sythetic datatset by Zafar et al. (2017)
@@ -59,7 +61,8 @@ models:                               # list of models/debiasing procedures to b
   - biasGrad
 
 pruning:                              # pruning parameters
-  dynamic: true                       # re-compute neuron influences after every pruning step? {true, false}
+  dynamic: true                       # re-compute neuron influences after every pruning step? 
+                                        # {true, false}
   step_size: 1                        # number of units pruned per step
   stop_early: true                    # stop pruning when the performance drops close to random or 
                                         # the maximum number of steps is reached? {true, false}
@@ -70,7 +73,8 @@ biasGrad:                             # bias gradient descent/ascent parameters
   lr: 0.00001                         # learning rate
   n_epochs: 200                       # number of epochs
   batch_size: 256                     # batch size
-  val_only: true                      # perform fine-tuning only on the validation set? {true, false}
+  val_only: true                      # perform fine-tuning only on the validation set? 
+                                        # {true, false}
   obj_lb: 0.70                        # ϱ parameter, a lower bound on the performance
   n_evals: 3                          # number of times to evaluate the fine-tuned model per epoch
 ```
@@ -87,7 +91,8 @@ default:                              # original model's parameters
   batch_size: 32                      # batch size
   n_epochs: 20                        # number of training epochs
   arch: vgg                           # network's architecture {vgg, resnet}
-  pretrained: true                    # initialise the model with pretrained weights? {true, false}
+  pretrained: true                    # initialise the model with pretrained weights? 
+                                        # {true, false}
 
 pruning:                              # pruning parameters
   max_steps: 10                       # the maximum number of pruning steps before early stopping
