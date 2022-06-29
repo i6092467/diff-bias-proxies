@@ -51,7 +51,7 @@ protected: age                        # name of the protected attribute
 metric: eod                           # bias measure {spd, eod}
 accc_metric: balanced_accuracy        # performance measure 
                                         # {balanced_accuracy, accuracy, f1_score}
-modelpath: my_model                   # name of the trained standard model, for logging purposes
+modelpath: my_model                   # name of the trained model, for logging purposes
 dataset_alpha: 2.0                    # α parameter for the synthetic dataset by Loh et al.
 dataset_theta: 0.7                    # θ parameter for the sythetic datatset by Zafar et al.
 
