@@ -137,6 +137,7 @@ Further details are documented within the code.
 - The code structure is based on the [repository](https://github.com/abacusai/intraprocessing_debiasing) by [Savani et al. (2020)](https://arxiv.org/abs/2006.08564)
 - For MIMIC-III, we used the pre-processing based on the [code](https://github.com/USC-Melady/Benchmarking_DL_MIMICIII) by [Purushotham et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1532046418300716)
 - For MIMIC-CXR, we adpated [implementation](https://github.com/choprashweta/Adversarial-Debiasing) of adversarial in-processing by Shweta Chopra et al.
+- One of the synthetic datasets is based on the [code](https://github.com/mbilalzafar/fair-classification) by [Zafar et al. (2017)](http://proceedings.mlr.press/v54/zafar17a.html)
 
 ### 📧 Maintainers
 - [Ričards Marcinkevičs](https://rmarcinkevics.github.io/) ([ricards.marcinkevics@inf.ethz.ch](mailto:ricards.marcinkevics@inf.ethz.ch))
