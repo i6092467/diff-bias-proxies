@@ -83,8 +83,8 @@ biasGrad:                             # bias gradient descent/ascent parameters
 For the **chest X-ray** experiments, additional parameters include:
 ```
 priv_class: M                         # name of the privileged class of the prot. attribute
-unpriv_class: F                       # name of the underprivileged class of the prot. attribute
-prot_ratio: 0.75                      # the ratio between privileged and underprivileged 
+unpriv_class: F                       # name of the unprivileged class of the prot. attribute
+prot_ratio: 0.75                      # the ratio between privileged and unprivileged 
                                         # class frequencies in the training set
 disease: Enlarged Cardiomediastinum   # disease label to be predicted
 num_workers: 2                        # number of loader worker processes for data loaders
