@@ -98,6 +98,7 @@ default:                              # original model's parameters
 
 pruning:                              # pruning parameters
   max_steps: 10                       # the maximum number of steps before early stopping
+  batch_size: 80                      # batch size for approximating neuron influence
 ```
 For the further details regarding YAML parameters, consult the [code](https://github.com/abacusai/intraprocessing_debiasing) by [Savani et al. (2020)](https://arxiv.org/abs/2006.08564).
 
