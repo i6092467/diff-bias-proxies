@@ -76,16 +76,16 @@ biasGrad:                             # bias gradient descent/ascent parameters
   val_only: true                      # perform fine-tuning only on the validation set? 
                                         # {true, false}
   obj_lb: 0.70                        # ϱ parameter, a lower bound on the performance
-  n_evals: 3                          # number of times to evaluate the fine-tuned model per epoch
+  n_evals: 3                          # number of times to evaluate the model per epoch
 ```
 For the **chest X-ray** experiments, additional parameters include:
 ```
-priv_class: M                         # name of the privileged class of the protected attribute
-unpriv_class: F                       # name of the underprivileged class of the protected attribute
+priv_class: M                         # name of the privileged class of the prot. attribute
+unpriv_class: F                       # name of the underprivileged class of the prot. attribute
 prot_ratio: 0.75                      # the ratio between privileged and underprivileged 
                                         # class frequencies in the training set
 disease: Enlarged Cardiomediastinum   # disease label to be predicted
-num_workers: 2                        # number of loader worker processes for PyTorch data loaders
+num_workers: 2                        # number of loader worker processes for data loaders
 
 default:                              # original model's parameters
   batch_size: 32                      # batch size
@@ -95,7 +95,7 @@ default:                              # original model's parameters
                                         # {true, false}
 
 pruning:                              # pruning parameters
-  max_steps: 10                       # the maximum number of pruning steps before early stopping
+  max_steps: 10                       # the maximum number of steps before early stopping
 ```
 For the further details regarding YAML parameters, consult the [code](https://github.com/abacusai/intraprocessing_debiasing) by [Savani et al. (2020)](https://arxiv.org/abs/2006.08564).
 
