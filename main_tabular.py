@@ -235,17 +235,24 @@ def main(config):
             results_test['EqOdds'] = get_test_objective(y_pred, data, config)
             eqodds = None
 
-        # Evaluate Random Debiasing
+        # Evaluate Random Perturbation Debiasing
         if 'random' in config['models']:
              from algorithms.random import random_debiasing
              results_valid['random'], results_test['random'] = random_debiasing(model_state_dict, data,
                                                                                 config, device)
 
-        # Evaluate Adversarial
+        # Evaluate Adversarial Intra-processing
         if 'adversarial' in config['models']:
             from algorithms.adversarial import adversarial_debiasing
             results_valid['adversarial'], results_test['adversarial'] = adversarial_debiasing(model_state_dict, data,
                                                                                               config, device)
+
+        # Evaluate Adversarial In-processing
+        if 'mitigating' in config['models']:
+            from algorithms.mitigating import mitigating_debiasing
+            results_valid['mitigating'], results_test['mitigating'] = mitigating_debiasing(model_state_dict, data,
+                                                                                           config, device)
+
         # Save Results
         results_valid['config'] = config
         logger.info(f'Validation Results: {results_valid}')

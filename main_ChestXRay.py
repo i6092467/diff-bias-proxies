@@ -28,6 +28,7 @@ from utils.data_utils import to_dataframe
 from algorithms.pruning import prune
 from algorithms.biasGrad import bias_gda_dataloaders
 from algorithms.adversarial import (val_model_dataloaders, get_best_objective)
+from algorithms.mitigating import train_fair_ChestXRay_model
 
 from datasets.chestxray_dataset import get_ChestXRay_mimic_dataloaders
 
@@ -539,6 +540,59 @@ def main(config):
             # Get rid of data loaders to free up memory
             dataloaders_adv = None
             dataset_sizes_adv = None
+
+        if 'mitigating' in config['models']:
+            # Get data
+            if config['dataset'] == 'chestxray_mimic':
+                dataloaders_mit, dataset_sizes_mit = get_ChestXRay_mimic_dataloaders(
+                    device, root_dir=ROOT_DIR, prot_attr=config['protected'],
+                    priv_class=config['priv_class'], unpriv_class=config['unpriv_class'],
+                    train_prot_ratio=config['prot_ratio'], class_names=[config['disease'], 'No Finding'],
+                    batch_size=config['mitigating']['batch_size'], num_workers=config['num_workers'], seed=seed)
+            else:
+                NotImplementedError('This chest X-ray dataset not supported!')
+
+            model_, _, __, ___, ____ = train_fair_ChestXRay_model(
+                dataloaders=dataloaders_mit, dataset_sizes=dataset_sizes_mit, device=device, config=config,
+                bias_metric='eod', batch_size=config['mitigating']['batch_size'],
+                num_epochs=config['mitigating']['n_epochs'])
+
+            with torch.no_grad():
+                valid_pred_scores, y_valid, p_valid = eval_model_w_data_loaders(
+                    model=model_, device=device, dataloader=dataloaders_mit['val'],
+                    dataset_size=dataset_sizes_mit['val'], batch_size=config['mitigating']['batch_size'])
+
+                test_pred_scores, y_test, p_test = eval_model_w_data_loaders(
+                    model=model_, device=device, dataloader=dataloaders_mit['test'],
+                    dataset_size=dataset_sizes_mit['test'], batch_size=config['mitigating']['batch_size'])
+
+                logger.info('Finding best threshold for debiased model to minimize objective function')
+                threshs = np.linspace(0, 1, 101)
+                performances = []
+                for thresh in threshs:
+                    if config['acc_metric'] == 'balanced_accuracy':
+                        perf = balanced_accuracy_score(y_valid, valid_pred_scores > thresh)
+                    elif config['acc_metric'] == 'accuracy':
+                        perf = accuracy_score(y_valid, valid_pred_scores > thresh)
+                    elif config['acc_metric'] == 'f1_score':
+                        perf = f1_score(y_valid, valid_pred_scores > thresh)
+                    else:
+                        print('Accuracy metric not defined')
+                    performances.append(perf)
+                best_thresh = threshs[np.argmax(performances)]
+
+                logger.info('Evaluating debiased model with best threshold.')
+                results_valid['mitigating'] = get_valid_objective_(y_pred=(valid_pred_scores > best_thresh),
+                                                                   y_val=y_valid, p_val=p_valid, config=config)
+                logger.info(f'Results validation: {results_valid["mitigating"]}')
+
+                results_test['mitigating'] = get_test_objective_(y_pred=(test_pred_scores > best_thresh), y_test=y_test,
+                                                                 p_test=p_test, config=config)
+                logger.info(f'Results test: {results_test["mitigating"]}')
+
+                # Get rid of data loaders to free up memory
+                dataloaders_mit = None
+                dataset_sizes_mit = None
 
         if 'biasGrad' in config['models']:
 
