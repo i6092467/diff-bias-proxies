@@ -2,7 +2,7 @@
 Adversarial in-processing algorithm by Zhang et al. (2018) [DOI: https://doi.org/10.1145/3278721.3278779].
 
 Code adapted from https://github.com/choprashweta/Adversarial-Debiasing and
-														https://github.com/abacusai/intraprocessing_debiasing
+																https://github.com/abacusai/intraprocessing_debiasing
 """
 import time
 

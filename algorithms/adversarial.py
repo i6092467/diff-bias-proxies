@@ -1,5 +1,7 @@
 """
-Adversarial fine-tuning algorithm.
+Adversarial intra-processing algorithm by Savani et al. (2020) [https://arxiv.org/abs/2006.08564].
+
+Code adapted from https://github.com/abacusai/intraprocessing_debiasing
 """
 import logging
 
@@ -35,14 +37,17 @@ def get_best_objective(y_true, y_pred, y_prot, config):
     threshs = torch.linspace(0, 1, 101)
     best_obj, best_thresh = -math.inf, 0.
     for thresh in threshs:
-        indices = np.random.choice(np.arange(y_pred.size()[0]), num_samples*y_pred.size()[0], replace=True).reshape(num_samples, y_pred.size()[0])
+        indices = np.random.choice(np.arange(y_pred.size()[0]), num_samples*y_pred.size()[0],
+                                   replace=True).reshape(num_samples, y_pred.size()[0])
         objs = []
         for index in indices:
             y_pred_tmp = y_pred[index]
             y_true_tmp = y_true[index]
             y_prot_tmp = y_prot[index]
-            perf = (torch.mean((y_pred_tmp > thresh)[y_true_tmp.type(torch.bool)].type(torch.float32)) + torch.mean((y_pred_tmp <= thresh)[~y_true_tmp.type(torch.bool)].type(torch.float32))) / 2
-            bias = compute_empirical_bias((y_pred_tmp > thresh).float().cpu(), y_true_tmp.float().cpu(), y_prot_tmp.float().cpu(), config['metric'])
+            perf = (torch.mean((y_pred_tmp > thresh)[y_true_tmp.type(torch.bool)].type(torch.float32)) +
+                    torch.mean((y_pred_tmp <= thresh)[~y_true_tmp.type(torch.bool)].type(torch.float32))) / 2
+            bias = compute_empirical_bias((y_pred_tmp > thresh).float().cpu(), y_true_tmp.float().cpu(),
+                                          y_prot_tmp.float().cpu(), config['metric'])
             objs.append(compute_objective(perf, bias))
         obj = float(torch.tensor(objs).mean())
         if obj > best_obj:
@@ -52,6 +57,7 @@ def get_best_objective(y_true, y_pred, y_prot, config):
 
 
 def compute_objective(performance, bias, epsilon=0.05, margin=0.01):
+    """Evaluate constrained objective"""
     if abs(bias) <= (epsilon-margin):
         return performance
     else:
@@ -59,6 +65,7 @@ def compute_objective(performance, bias, epsilon=0.05, margin=0.01):
 
 
 def adversarial_debiasing(model_state_dict, data, config, device):
+    """Runs adversarial debiasing on the given trained model and the validation set."""
     logger.info('Training Adversarial model.')
     actor = load_model(data.num_features, config.get('hyperparameters', {}))
     actor.load_state_dict(model_state_dict)
@@ -113,8 +120,9 @@ def adversarial_debiasing(model_state_dict, data, config, device):
             pred_bias = critic(actor.trunc_forward(cX_valid))
             bceloss = actor_loss_fn(actor(cX_valid)[:, 0], cy_valid)
 
-            # loss = lam*abs(pred_bias) + (1-lam)*loss
-            objloss = max(1, config['adversarial']['lambda']*(abs(pred_bias[0][0])-config['objective']['epsilon']+config['adversarial']['margin'])+1) * bceloss
+            objloss = max(
+                1, config['adversarial']['lambda'] * (abs(pred_bias[0][0]) - config['objective']['epsilon'] +
+                                                      config['adversarial']['margin']) + 1) * bceloss
 
             objloss.backward()
             train_loss = objloss.item()
@@ -133,7 +141,8 @@ def adversarial_debiasing(model_state_dict, data, config, device):
     with torch.no_grad():
         scores = actor(data.X_valid_gpu)[:, 0].reshape(-1, 1).cpu().numpy()
 
-    best_adv_thresh, _ = get_best_thresh(scores, np.linspace(0, 1, 101), data, config, margin=config['adversarial']['margin'])
+    best_adv_thresh, _ = get_best_thresh(scores, np.linspace(0, 1, 101), data, config,
+                                         margin=config['adversarial']['margin'])
 
     logger.info('Evaluating Adversarial model on best threshold.')
     with torch.no_grad():

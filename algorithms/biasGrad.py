@@ -1,5 +1,5 @@
 """
-Bias gradient descent/ascent algorithm.
+Bias gradient descent/ascent (GD/A) intra-processing algorithm.
 """
 import os.path
 
@@ -23,12 +23,12 @@ import progressbar
 
 
 def spd_diff(y_pred, y_true, p):
-    # Differentiable surrogate for the SPD
+    """Differentiable proxy function for the SPD"""
     return torch.mean(y_pred[p == 0]) - torch.mean(y_pred[p == 1])
 
 
 def eod_diff(y_pred, y_true, p):
-    # Differentiable surrogate for the EOD
+    """Differentiable proxy function for the EOD"""
     if isinstance(p, torch.Tensor):
         return torch.mean(y_pred[torch.logical_and(p == 0, y_true == 1)]) - \
                torch.mean(y_pred[torch.logical_and(p == 1, y_true == 1)])
@@ -38,7 +38,7 @@ def eod_diff(y_pred, y_true, p):
 
 
 def choose_best_thresh_bal_acc(data: utils.data_utils.TabularData, valid_pred_scores: np.ndarray, n_thresh=101):
-    # Find the best threshold
+    """Optimises classification threshold w.r.t. balanced accuracy"""
     threshs = np.linspace(0, 1, n_thresh)
     performances = []
     for thresh in threshs:
@@ -50,7 +50,8 @@ def choose_best_thresh_bal_acc(data: utils.data_utils.TabularData, valid_pred_sc
 
 
 def choose_best_thresh_bal_acc_(y_valid: np.ndarray, valid_pred_scores: np.ndarray, n_thresh=101):
-    # Find the best threshold
+    """Optimises classification threshold w.r.t. balanced accuracy"""
+    # NOTE: this function is applied directly to numpy arrays, rather than a TabularData object
     threshs = np.linspace(0, 1, n_thresh)
     performances = []
     for thresh in threshs:
@@ -63,6 +64,7 @@ def choose_best_thresh_bal_acc_(y_valid: np.ndarray, valid_pred_scores: np.ndarr
 
 def plot_results(step_num: np.ndarray, objective: list, bias_metric: list, pred_performance: list,
                  j_best: int, seed: int, config: dict, suffix='', display=False):
+    """Plots and saves a graph with changes in the bias, performance, and constrained objective during fine-tuning"""
     fig = plt.figure()
     plt.plot(step_num, objective, label='Constrained Objective')
     plt.plot(step_num, bias_metric, label='Bias: ' + str(config['metric']))
@@ -77,6 +79,7 @@ def plot_results(step_num: np.ndarray, objective: list, bias_metric: list, pred_
 
 
 def save_finetuning_trajectory(results: dict, seed: int, config: dict):
+    """Saves traces of the bias, performance, and constrained objective during fine-tuning in a .csv file"""
     arr = np.stack((results['objective'], results['bias'], results['perf']), axis=1)
     np.savetxt(fname=os.path.join('results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
                                                             '_trajectory' + '.csv'), X=arr)
@@ -84,7 +87,8 @@ def save_finetuning_trajectory(results: dict, seed: int, config: dict):
 
 def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: bool = False, plot: bool = False,
                          display: bool = False, verbose: int = 1):
-    # Suppress annoying warnings
+    """Runs bias GD/A for the given model on the tabular data"""
+    # Suppress warnings
     import warnings
     warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -146,7 +150,7 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
             train_loss += loss.item()
             optimiser.step()
 
-            if batch_cnt % eval_factor == 0:
+            if batch_cnt % eval_factor == 0:        # Evaluate fine-tuned model on the validation set
                 with torch.no_grad():
                     valid_pred_scores = model_(data.X_valid)[:, 0].reshape(-1, 1).cpu().numpy()
 
@@ -160,6 +164,7 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
                     bias_metric_.append(obj_dict['bias'])
                     pred_performance_.append(obj_dict['performance'])
 
+                    # Save the model with the lowest bias that satisfies the specified accuracy constraint
                     if np.abs(obj_dict['bias']) < best_bias and obj_dict['performance'] >= config['biasGrad']['obj_lb']:
                         best_bias = np.abs(obj_dict['bias'])
                         best_model = copy.deepcopy(model_)
@@ -174,13 +179,14 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
     if verbose:
         print('\n' * 2)
 
+    # Save performance traces
     save_finetuning_trajectory(
         results={'objective': pred_performance_ * (np.abs(bias_metric_) < config['objective']['epsilon']),
                  'bias': bias_metric_,
                  'perf': pred_performance_},
         seed=seed, config=config)
 
-    # Plotting
+    # Plot performance traces
     if plot:
         step_num = np.arange(1, len(objective_) + 1)
         plot_results(step_num=step_num, objective=objective_,
@@ -190,8 +196,7 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
     model_.eval()
 
     if best_model is None:
-        print()
-        print()
+        print('\n' * 2)
         print('No debiased model satisfies the constraints!')
         best_model = copy.deepcopy(model)
 
@@ -203,7 +208,10 @@ def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: b
 def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_loader_val: DataLoader, dataset_size_val,
                          opt_alg, device, config: dict, seed: int, plot: bool = False,
                          display: bool = False, verbose: int = 1):
-    # Suppress annoying warnings
+    """Runs bias GD/A for the given model with the provided data loaders"""
+    # NOTE: set data_loader_train to None in the call if you want to perform debiasing on the validation set only
+
+    # Suppress warnings
     import warnings
     warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -241,7 +249,7 @@ def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_l
         bar.start()
         bar_cnt = 0
 
-    # Evaluate the original model (in case its unbiased)
+    # Evaluate the original model (in case it is already unbiased)
     with torch.no_grad():
         valid_pred_scores = np.zeros((dataset_size_val,))
         y_valid = np.zeros((dataset_size_val,))
@@ -281,6 +289,7 @@ def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_l
 
         asc = obj_dict['bias'] < 0
 
+    # Actual debiasing
     terminus_est = False
     for i in range(config['biasGrad']['n_epochs']):
 
@@ -303,7 +312,7 @@ def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_l
             loss.backward()
             optimiser.step()
 
-            # Evaluate on the validation data every `eval_factor' batches
+            # Evaluate on the validation data periodically
             if batch_cnt % eval_factor == 0:
                 with torch.no_grad():
                     valid_pred_scores = np.zeros((dataset_size_val,))
@@ -337,14 +346,19 @@ def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_l
                     bias_metric_.append(obj_dict['bias'])
                     pred_performance_.append(obj_dict['performance'])
 
+                    # Save the least biased model that satisfies the specified constraint on the performance
                     if np.abs(obj_dict['bias']) < best_bias and obj_dict['performance'] >= config['biasGrad']['obj_lb']:
                         best_bias = np.abs(obj_dict['bias'])
                         best_model = copy.deepcopy(model_)
                         j_best = len(objective_) - 1
 
-                    # Termination criterion
+                    # Termination criterion: performance drops close to random
+                    # NOTE: should be adjusted accordingly for the F1-score
                     if obj_dict['performance'] <= 0.52:
                         terminus_est = True
+                        if config['acc_metric'] == 'f1_score':
+                            print('\n' * 2)
+                            print('WARNING: Termination criterion does not support F1-score!')
                         break
 
             batch_cnt += 1
@@ -359,13 +373,14 @@ def bias_gda_dataloaders(model: nn.Module, data_loader_train: DataLoader, data_l
         if verbose:
             print('\n' * 2)
 
+    # Save performance traces
     save_finetuning_trajectory(
         results={'objective': pred_performance_ * (np.abs(bias_metric_) < config['objective']['epsilon']),
                  'bias': bias_metric_,
                  'perf': pred_performance_},
         seed=seed, config=config)
 
-    # Plotting
+    # Plot performance traces
     if plot:
         step_num = np.arange(1, len(objective_) + 1)
         plot_results(step_num=step_num, objective=objective_,

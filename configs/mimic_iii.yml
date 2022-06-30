@@ -15,6 +15,7 @@ models:
   - EqOdds
   - random
   - adversarial
+  - mitigating
   - pruning
   - biasGrad
 random:
@@ -31,6 +32,14 @@ adversarial:
   actor_steps: 101
   sharpness: 300.
   margin: 0.01
+mitigating:
+  epochs: 40
+  lr: 0.0001
+  critic_steps: 201
+  batch_size: 64
+  actor_steps: 201
+  alpha: 0.8
+  margin: 0.02
 pruning:
   dynamic: true
   step_size: 1
