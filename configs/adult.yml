@@ -1,15 +1,18 @@
 ---
+# List of seeds for experiment replications
 seed: [42, 73, 666, 777, 1009, 1279, 1597, 1811, 1949, 2053, 2129, 2287, 2617, 2741, 2903, 3079, 3257, 3413, 3571, 3727]
-experiment_name: adult_spd
-dataset: adult
-protected: sex
-metric: spd
-acc_metric: balanced_accuracy
-modelpath: adult_sex
-objective:
-  sharpness: 500.
-  epsilon: 0.05
-models:
+experiment_name: adult_spd          # name of the experiment, for logging purposes
+dataset: adult                      # name of the dataset: {adult, bank, compas, mimic, synthetic_loh, synthetic_zafar}
+protected: sex                      # name of the protected attribute
+metric: spd                         # bias measure: {spd, eod}
+acc_metric: balanced_accuracy       # predictive performance measure: {balanced_accuracy, accuracy, f1_score}
+modelpath: adult_sex                # name of the trained model, for logging purposes
+
+objective:                          # bias-constrained objective parameters
+  sharpness: 500.                   # sharpness parameter for the differentiable approximation
+  epsilon: 0.05                     # upper/lower bound on bias
+
+models:                             # list of models/debiasing procedures to be run
   - default
   - ROC
   - EqOdds
@@ -18,10 +21,12 @@ models:
   - mitigating
   - pruning
   - biasGrad
+
 random:
   num_trials: 101
   stddev: 0.1
   margin: 0.01
+
 adversarial:
   num_deep: 3
   lr: 0.001
@@ -32,6 +37,7 @@ adversarial:
   actor_steps: 101
   sharpness: 300.
   margin: 0.01
+
 mitigating:
   epochs: 40
   lr: 0.0001
@@ -40,16 +46,18 @@ mitigating:
   actor_steps: 201
   alpha: 0.8
   margin: 0.02
-pruning:
-  dynamic: true
-  step_size: 1
-  stop_early: true
-  val_only: true
-  obj_lb: 0.52
-biasGrad:
-  lr: 0.00001
-  n_epochs: 200
-  batch_size: 256
-  val_only: true
-  obj_lb: 0.62
-  n_evals: 3
+
+pruning:                            # pruning parameters
+  dynamic: true                       # re-compute neuron influences after every pruning step? {true, false}
+  step_size: 1                        # number of units pruned per step
+  stop_early: true                    # stop early when the performance drops or the max. number of steps is reached? {true, false}
+  val_only: true                      # perform pruning only on the validation set? {true, false}
+  obj_lb: 0.52                        # ϱ-parameter from the original paper, a lower bound on the performance
+
+biasGrad:                           # bias gradient descent/ascent parameters
+  lr: 0.00001                         # learning rate
+  n_epochs: 200                       # number of epochs
+  batch_size: 256                     # batch size
+  val_only: true                      # perform fine-tuning only on the validation set? {true, false}
+  obj_lb: 0.62                        # ϱ-parameter from the original paper, a lower bound on the performance
+  n_evals: 3                          # number of times to evaluate the model per epoch

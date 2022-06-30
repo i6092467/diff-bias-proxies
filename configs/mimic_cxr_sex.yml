@@ -3,17 +3,19 @@ seed: [42, 73, 666, 777, 1009, 1279, 1597, 1811, 1949, 2053, 2129, 2287, 2617, 2
 experiment_name: mimic_cxr_sex_eod
 dataset: chestxray_mimic
 protected: gender
-priv_class: M
-unpriv_class: F
-prot_ratio: 0.75
-disease: Enlarged Cardiomediastinum
+priv_class: M                                                         # privileged class of the prot. attribute
+unpriv_class: F                                                       # unprivileged class of the prot. attribute
+prot_ratio: 0.75                                                      # the ratio between privileged vs. unprivileged class frequencies in the training set
+disease: Enlarged Cardiomediastinum                                   # disease label to be predicted
 metric: eod
 acc_metric: balanced_accuracy
 modelpath: chestxray_mimic_enlargedCardiomediastinum_0_75_vgg
-num_workers: 2
+num_workers: 2                                                        # number of worker processes for data loaders
+
 objective:
   sharpness: 500.
   epsilon: 0.03
+
 models:
   - default
   - ROC
@@ -23,15 +25,18 @@ models:
   - mitigating
   - pruning
   - biasGrad
-default:
-  batch_size: 32
-  n_epochs: 20
-  arch: vgg
-  pretrained: true
+
+default:                                                              # original model's parameters
+  batch_size: 32                                                        # batch size
+  n_epochs: 20                                                          # number of training epochs
+  arch: vgg                                                             # network's architecture: {vgg, resnet}
+  pretrained: true                                                      # initialise the model with pretrained weights? {true, false}
+
 random:
   num_trials: 101
   stddev: 0.1
   margin: 0.01
+
 adversarial:
   num_deep: 3
   lr: 0.0001
@@ -42,17 +47,20 @@ adversarial:
   actor_steps: 101
   sharpness: 300.
   margin: 0.02
+
 mitigating:
   n_epochs: 20
   lbda: 0.5
   batch_size: 32
-pruning:
+
+pruning:                                                              # pruning parameters
   dynamic: true
   step_size: 1500
-  max_steps: 10
+  max_steps: 10                                                         # maximum number of steps before early stopping
   stop_early: true
-  batch_size: 80
+  batch_size: 80                                                        # batch size for approximating neuron influence
   obj_lb: 0.65
+
 biasGrad:
   lr: 0.00001
   n_epochs: 10
