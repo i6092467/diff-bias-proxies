@@ -139,8 +139,96 @@ class ChestXRayVGG16Masked(nn.Module):
         return t
 
 
+class ChestXRayResNet18Masked(nn.Module):
+
+    def __init__(self, base_model: ChestXRayResNet18, prunable_layers, start_idx, end_idx):
+        super().__init__()
+        self.all_layers = [base_model.resnet18.conv1, base_model.resnet18.bn1, base_model.resnet18.relu,
+                           base_model.resnet18.maxpool, base_model.resnet18.layer1, base_model.resnet18.layer2,
+                           base_model.resnet18.layer3, base_model.resnet18.layer4, base_model.resnet18.avgpool,
+                           base_model.resnet18.fc, base_model.out]
+        base_model.resnet18.relu.inplace = False
+        layers_tmp = get_children(base_model)
+        for l in layers_tmp:
+            if isinstance(l, nn.ReLU):
+                l.inplace = False
+        self.prunable_layers = prunable_layers
+        self.start_idx = start_idx
+        self.end_idx = end_idx
+
+    def forward(self, t, pruned=None):
+        cnt = 0
+        cnt_ = 0
+        for (i, l) in enumerate(self.all_layers):
+            t = l(t)
+            if l in self.prunable_layers:
+                if pruned is not None:
+                    pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
+                                                           pruned < self.end_idx[cnt])] - cnt_
+
+                    if len(t.shape) == 2:
+                        t[:, pruned_structs] = 0
+
+                        cnt_ += t.shape[1]
+                        cnt += 1
+                    elif len(t.shape) == 4:
+                        i_hat = (pruned_structs / (t.shape[2] * t.shape[3])).astype(int)
+                        j_hat = ((pruned_structs - t.shape[2] * t.shape[3] * i_hat) / t.shape[3]).astype(int)
+                        k_hat = pruned_structs - t.shape[2] * t.shape[3] * i_hat - j_hat * t.shape[3]
+
+                        t[:, i_hat, j_hat, k_hat] = 0
+
+                        cnt_ += t.shape[1] * t.shape[2] * t.shape[3]
+                        cnt += 1
+                    else:
+                        pass
+
+            if i == len(self.all_layers) - 2:
+                t = torch.relu(t)
+
+            if i == len(self.all_layers) - 3:
+                t = torch.flatten(t, 1)
+
+        return torch.sigmoid(t)
+
+    def trunc_forward(self, t, pruned=None):
+        cnt = 0
+        cnt_ = 0
+        for (i, l) in enumerate(self.all_layers):
+            t = l(t)
+            if l in self.prunable_layers:
+                if pruned is not None:
+                    pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
+                                                           pruned < self.end_idx[cnt])] - cnt_
+
+                    if len(t.shape) == 2:
+                        t[:, pruned_structs] = 0
+
+                        cnt_ += t.shape[1]
+                        cnt += 1
+                    elif len(t.shape) == 4:
+                        i_hat = (pruned_structs / (t.shape[2] * t.shape[3])).astype(int)
+                        j_hat = ((pruned_structs - t.shape[2] * t.shape[3] * i_hat) / t.shape[3]).astype(int)
+                        k_hat = pruned_structs - t.shape[2] * t.shape[3] * i_hat - j_hat * t.shape[3]
+
+                        t[:, i_hat, j_hat, k_hat] = 0
+
+                        cnt_ += t.shape[1] * t.shape[2] * t.shape[3]
+                        cnt += 1
+                    else:
+                        pass
+
+            if i == len(self.all_layers) - 2:
+                t = torch.relu(t)
+
+            if i == len(self.all_layers) - 3:
+                t = torch.flatten(t, 1)
+
+        return t
+
+
 def get_children(model: torch.nn.Module):
-    # get children form model!
+    # get children from model!
     children = list(model.children())
     flatt_children = []
     if children == []:
@@ -157,7 +245,8 @@ def get_children(model: torch.nn.Module):
 
 
 def get_layers_to_prune_ResNet18(model: ChestXRayResNet18):
-    NotImplementedError('ResNet18 pruning not implemented yet!')
+    layers = [model.resnet18.conv1]
+    return layers
 
 
 def get_layers_to_prune_VGG16(model: ChestXRayVGG16):
