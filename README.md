@@ -25,7 +25,7 @@ All the libraries required are in the conda environment [`environment.yml`](envi
 conda env create -f environment.yml   # install dependencies
 conda activate DiffBiasProxies        # activate environment
 ```
-To run the MIMIC-III experiments, you will need to first execute the [code](https://github.com/USC-Melady/Benchmarking_DL_MIMICIII) by [Purushotham et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1532046418300716) to get the pre-processed data.
+To run the [**MIMIC-III**](https://physionet.org/content/mimiciii/1.4/) experiments, you will need to first execute the [code](https://github.com/USC-Melady/Benchmarking_DL_MIMICIII) by [Purushotham et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1532046418300716) to get the pre-processed data. To prepare [**MIMIC-CXR**](https://physionet.org/content/mimic-cxr/2.0.0/) data, run [this Jupyter notebook](notebooks/CXR_Mimic_Preprocessing.ipynb).
 
 ### ⚙️ Usage
 Scripts [`main_tabular.py`](main_tabular.py) and [`main_ChestXRay.py`](main_ChestXRay.py) run the experiments on the tabular and chest X-ray data, respectively. [`/bin`](bin/) folder contains example shell scripts for concrete datasets:
