@@ -1,5 +1,7 @@
 """
-Network architectures and training scheme for tabular datasets.
+Network architectures and training procedures for tabular datasets
+
+NOTE: code adapted from https://github.com/abacusai/intraprocessing_debiasing/blob/main/models.py
 """
 import logging
 import math
@@ -14,7 +16,7 @@ import utils.data_utils
 
 
 class Model(nn.Module):
-
+    """FCNN classifier"""
     def __init__(self, input_size: int, num_deep=10, hid=32):
         super().__init__()
         self.fc0 = nn.Linear(input_size, hid)
@@ -38,7 +40,7 @@ class Model(nn.Module):
 
 
 class Critic(nn.Module):
-
+    """Critic model for the adversarial intra-processing technique by Savani et al. (2020)"""
     def __init__(self, sizein: int, num_deep=3, hid=32):
         super().__init__()
         self.fc0 = nn.Linear(sizein, hid)
@@ -56,10 +58,12 @@ class Critic(nn.Module):
 
 
 def load_model(input_size, hyperparameters):
+    """Loads the model with the specified parameter values"""
     return Model(input_size, **hyperparameters)
 
 
 def train_model(model: nn.Module, data: utils.data_utils.TabularData, epochs=1001):
+    """Training procedure for the standard FCNN classifier on tabular data"""
     loss_fn = torch.nn.BCELoss()
     optimizer = optim.Adam(model.parameters())
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer)

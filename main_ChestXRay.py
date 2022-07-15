@@ -1,5 +1,5 @@
 """
-Main file to run MIMIC-CXR experiments.
+Runs MIMIC-CXR experiments
 """
 import argparse
 import json
@@ -119,7 +119,7 @@ def main(config):
         results_valid = {}
         results_test = {}
 
-        # Evaluate default model
+        # Evaluate the default model
         if 'default' in config['models']:
             logger.info('Finding best threshold for default model to minimize objective function')
 
@@ -194,7 +194,7 @@ def main(config):
             dataloaders = None
             dataset_sizes = None
 
-        # Evaluate Random Debiasing
+        # Evaluate random perturbation intra-processing
         if 'random' in config['models']:
             print('Perturbing the network randomly...')
             print()
@@ -275,7 +275,7 @@ def main(config):
                                                            p_test=p_test, config=config)
             logger.info(f'Results test: {results_test["random"]}')
 
-        # Evaluate Equality of Odds
+        # Evaluate the ROC post-processing
         if 'ROC' in config['models']:
             metric_map = {
                 'spd': 'Statistical parity difference',
@@ -355,7 +355,7 @@ def main(config):
                 dataset_sizes_roc = None
                 ROC = None
 
-        # Evaluate Equality of Odds
+        # Evaluate the equality of odds post-processing
         if 'EqOdds' in config['models']:
             # Get data
             if config['dataset'] == 'chestxray_mimic':
@@ -424,6 +424,7 @@ def main(config):
             dataset_sizes_eo = None
             eo = None
 
+        # Evaluate adversarial intra-processing
         if 'adversarial' in config['models']:
             # Get data
             if config['dataset'] == 'chestxray_mimic':
@@ -541,6 +542,7 @@ def main(config):
             dataloaders_adv = None
             dataset_sizes_adv = None
 
+        # Evaluate adversarial in-processing
         if 'mitigating' in config['models']:
             # Get data
             if config['dataset'] == 'chestxray_mimic':
@@ -594,6 +596,7 @@ def main(config):
                 dataloaders_mit = None
                 dataset_sizes_mit = None
 
+        # Evaluate bias gradient descent/ascent
         if 'biasGrad' in config['models']:
 
             # Get data for bias GD/A
@@ -650,7 +653,7 @@ def main(config):
             dataset_sizes_bgda = None
 
         # NOTE: needs to be run the last, makes adjustments to the model object directly (to use less memory)
-        # Evaluate pruned model
+        # Evaluate pruning
         if 'pruning' in config['models']:
             # Get data for pruning
             if config['dataset'] == 'chestxray_mimic':
@@ -712,7 +715,7 @@ def main(config):
             dataloaders_pruning = None
             dataset_sizes_pruning = None
 
-        # Save Results
+        # Save the results
         results_valid['config'] = config
         logger.info(f'Validation Results: {results_valid}')
         logger.info(f'Saving validation results to {config["experiment_name"]}_valid_output_{seed}.json')

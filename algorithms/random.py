@@ -1,5 +1,5 @@
 """
-Random perturbation intra-processing algorithm by Savani et al. (2020) [https://arxiv.org/abs/2006.08564].
+Random perturbation intra-processing algorithm by Savani et al. (2020) [https://arxiv.org/abs/2006.08564]
 
 Code adapted from https://github.com/abacusai/intraprocessing_debiasing
 """

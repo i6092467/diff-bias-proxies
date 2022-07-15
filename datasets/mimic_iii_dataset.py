@@ -1,5 +1,9 @@
 """
-Data loaders for MIMIC-III.
+Data loaders for MIMIC-III
+
+NOTE: raw data can be downloaded from https://physionet.org/content/mimiciii/1.4/. You will need to first run
+the code from https://github.com/USC-Melady/Benchmarking_DL_MIMICIII and then the Jupyter notebook at
+notebooks/Tabular_Mimic-III_Preprocessing.ipynb
 """
 import os
 
@@ -10,21 +14,23 @@ from aif360.datasets import StandardDataset
 
 def default_preprocessing(df):
     """Remove missing values for the dataframe."""
-    # df.loc[df['age'] <78, 'age'] = 0
-    # df.loc[df['age'] >= 78, 'age'] = 1
     df.loc[(df['marital_status'] != 'MARRIED') & (df['marital_status'] != 'SINGLE'), 'marital_status'] = 1
     df.loc[(df['marital_status'] == 'MARRIED') | (df['marital_status'] == 'SINGLE'), 'marital_status'] = 0
     df.loc[df['gender'] == 'M', 'gender'] = 0
     df.loc[df['gender'] == 'F', 'gender'] = 1
     df.loc[(df['insurance'] != 'Medicare') & (df['insurance'] != 'Medicaid'), 'insurance'] = 1
     df.loc[(df['insurance'] == 'Medicare') | (df['insurance'] == 'Medicaid'), 'insurance'] = 0
-    df.loc[(df['ethnicity'] != 'WHITE') & (df['ethnicity'] != 'WHITE - RUSSIAN') & (df['ethnicity'] != 'WHITE - OTHER EUROPEAN') & (df['ethnicity'] != 'WHITE - BRAZILIAN') & (df['ethnicity'] != 'WHITE - EASTERN EUROPEAN'), 'ethnicity'] = 1
-    df.loc[(df['ethnicity'] == 'WHITE') | (df['ethnicity'] == 'WHITE - RUSSIAN') | (df['ethnicity'] == 'WHITE - OTHER EUROPEAN') | (df['ethnicity'] == 'WHITE - BRAZILIAN') | (df['ethnicity'] == 'WHITE - EASTERN EUROPEAN'), 'ethnicity'] = 0
+    df.loc[(df['ethnicity'] != 'WHITE') & (df['ethnicity'] != 'WHITE - RUSSIAN') &
+           (df['ethnicity'] != 'WHITE - OTHER EUROPEAN') & (df['ethnicity'] != 'WHITE - BRAZILIAN') &
+           (df['ethnicity'] != 'WHITE - EASTERN EUROPEAN'), 'ethnicity'] = 1
+    df.loc[(df['ethnicity'] == 'WHITE') | (df['ethnicity'] == 'WHITE - RUSSIAN') |
+           (df['ethnicity'] == 'WHITE - OTHER EUROPEAN') | (df['ethnicity'] == 'WHITE - BRAZILIAN') |
+           (df['ethnicity'] == 'WHITE - EASTERN EUROPEAN'), 'ethnicity'] = 0
     return df
 
 
 class MimicDataset(StandardDataset):
-    """Mimic Dataset.
+    """MIMIC Dataset.
 
     See :file:`aif360/data/raw/mimic-iii/README.md`.
     """
@@ -39,8 +45,7 @@ class MimicDataset(StandardDataset):
                                    'religion','gender','marital_status','ethnicity'],
                  na_values='', custom_preprocessing=default_preprocessing,
                  metadata=None):
-        """See :obj:`StandardDataset` for a description of the arguments.
-        """
+        # See :obj:`StandardDataset` for a description of the arguments.
 
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
             '..', 'data', 'raw', 'mimic-iii', 'mimic_non_series.csv')
@@ -50,7 +55,6 @@ class MimicDataset(StandardDataset):
         except IOError as err:
             print("IOError: {}".format(err))
             print("To use this class, please download the following file:")
-            # print("\n\thttps://archive.ics.uci.edu/ml/datasets/diabetes+130-us+hospitals+for+years+1999-2008")
             print("\nunzip it and place the files, as-is, in the folder:")
             print("\n\t{}\n".format(os.path.abspath(os.path.join(
                os.path.abspath(__file__), '..', '..', 'data', 'raw', 'mimic-iii'))))

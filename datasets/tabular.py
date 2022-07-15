@@ -1,5 +1,6 @@
 """
-General tabular dataset structure, a wrapper for the AIF 360 toolkit.
+Tabular benchmarking datasets, a wrapper for the AIF 360 toolkit
+Code adapted from https://github.com/abacusai/intraprocessing_debiasing/blob/main/utils.py
 """
 import numpy as np
 
@@ -16,8 +17,10 @@ def get_data(dataset, protected_attribute, seed=101, config=None):
             unprivileged_groups = [{'sex': 0}]
         elif protected_attribute == 'sex_or_race':
             dataset_orig.feature_names += ['sex_or_race']
-            dataset_orig.features = np.hstack([dataset_orig.features, np.expand_dims(np.logical_or(*dataset_orig.features[:, [2, 3]].T).astype(np.float64), -1)])
-            dataset_orig.protected_attributes = np.hstack([dataset_orig.protected_attributes, dataset_orig.features[:, [-1]]])
+            dataset_orig.features = np.hstack([dataset_orig.features, np.expand_dims(
+                np.logical_or(*dataset_orig.features[:, [2, 3]].T).astype(np.float64), -1)])
+            dataset_orig.protected_attributes = np.hstack(
+                [dataset_orig.protected_attributes, dataset_orig.features[:, [-1]]])
             dataset_orig.protected_attribute_names += ['sex_or_race']
             dataset_orig.privileged_protected_attributes += [np.array([1.])]
             dataset_orig.unprivileged_protected_attributes += [np.array([0.])]
@@ -49,8 +52,10 @@ def get_data(dataset, protected_attribute, seed=101, config=None):
             unprivileged_groups = [{'sex': 1}]
         elif protected_attribute == 'sex_or_race':
             dataset_orig.feature_names += ['sex_or_race']
-            dataset_orig.features = np.hstack([dataset_orig.features, np.expand_dims(np.logical_or(*dataset_orig.features[:, [0, 2]].T).astype(np.float64), -1)])
-            dataset_orig.protected_attributes = np.hstack([dataset_orig.protected_attributes, dataset_orig.features[:, [-1]]])
+            dataset_orig.features = np.hstack([dataset_orig.features, np.expand_dims(
+                np.logical_or(*dataset_orig.features[:, [0, 2]].T).astype(np.float64), -1)])
+            dataset_orig.protected_attributes = np.hstack(
+                [dataset_orig.protected_attributes, dataset_orig.features[:, [-1]]])
             dataset_orig.protected_attribute_names += ['sex_or_race']
             dataset_orig.privileged_protected_attributes += [np.array([1.])]
             dataset_orig.unprivileged_protected_attributes += [np.array([0.])]

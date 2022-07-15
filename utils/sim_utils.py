@@ -1,5 +1,5 @@
 """
-Numerical simulation utility functions.
+Numerical simulation utility functions
 """
 import numpy as np
 
@@ -7,6 +7,7 @@ from sklearn.datasets import make_low_rank_matrix
 
 
 def random_nonlin_map(n_in, n_out, n_hidden, rank=1000):
+    """Constructs a random MLP"""
     # Random MLP mapping
     W_0 = make_low_rank_matrix(n_in, n_hidden, effective_rank=rank)
     W_1 = make_low_rank_matrix(n_hidden, n_hidden, effective_rank=rank)
@@ -24,4 +25,5 @@ def random_nonlin_map(n_in, n_out, n_hidden, rank=1000):
 
 
 def ReLU(x):
+    """ReLU activation"""
     return x * (x > 0)

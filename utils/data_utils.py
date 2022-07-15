@@ -1,5 +1,5 @@
 """
-Data handling utilities.
+Data handling utilities
 """
 import torch
 
@@ -13,6 +13,7 @@ from aif360.datasets import StandardDataset
 
 
 class TabularData(object):
+    """Tabular dataset object"""
     def __init__(self, config, seed, device):
         self.train, self.valid, self.test, self.priv, self.unpriv = get_data(config['dataset'], config['protected'],
                                                                              seed=seed, config=config)
@@ -48,6 +49,7 @@ class TabularData(object):
 
 
 class AddGaussianNoise(object):
+    """A utility object for applying additive Gaussian noise to tensors"""
     def __init__(self, mean=0., std=1.):
         self.std = std
         self.mean = mean
@@ -60,6 +62,7 @@ class AddGaussianNoise(object):
 
 
 def to_dataframe(y_true, y_pred, y_prot, prot_name):
+    """Constructs a pandas DataFrame from the label, prediction, and protected attribute arrays"""
     df = pd.DataFrame({'y_true': y_true, 'y_pred': y_pred, prot_name: y_prot})
     dataset = StandardDataset(df, 'y_true', [1.], [prot_name], [[1.]])
     dataset.scores = y_pred.reshape(-1, 1)

@@ -1,5 +1,5 @@
 """
-Main file to run tabular experiments.
+Runs tabular experiments
 """
 import argparse
 import json
@@ -52,7 +52,7 @@ def main(config):
         Path('results/figures').mkdir(exist_ok=True)
         Path('results/logs').mkdir(exist_ok=True)
 
-        # Get Data
+        # Get data
         logger.info(f'Loading data from dataset: {config["dataset"]}.')
         data = TabularData(config, seed, device)
         logger.info(f'Privileged group: {data.priv}')
@@ -85,7 +85,7 @@ def main(config):
 
         results_valid = {}
         results_test = {}
-        # check acc config
+
         if config['acc_metric'] == 'balanced_accuracy':
             print('For comparison: Balanced accuracy score: ' + str(
                 balanced_accuracy_score(data.y_valid, valid_pred.scores > 0.5)))
@@ -98,7 +98,7 @@ def main(config):
         print('For comparison: AUROC score: ' + str(roc_auc_score(data.y_valid, valid_pred.scores)))
         print('For comparison: AP score: ' + str(average_precision_score(data.y_valid, valid_pred.scores)))
 
-        # Evaluate default model
+        # Evaluate the default model
         if 'default' in config['models']:
             logger.info('Finding best threshold for default model to minimize objective function')
             threshs = np.linspace(0, 1, 101)
@@ -120,7 +120,7 @@ def main(config):
             results_test['default'] = get_test_objective(test_pred.scores > best_thresh, data, config)
             logger.info(f'Results: {results_test["default"]}')
 
-        # Evaluate pruned model
+        # Evaluate pruning
         if 'pruning' in config['models']:
             print()
             model_pruned = prune_fc(model=model, data=data, config=config, seed=seed, plot=True, display=False)
@@ -155,6 +155,7 @@ def main(config):
             results_test['pruning'] = get_test_objective(test_pred_.scores > best_thresh, data, config)
             logger.info(f'Results test: {results_test["pruning"]}')
 
+        # Evaluate bias gradient descent/ascent
         if 'biasGrad' in config['models']:
             print()
             asc = results_valid['default']['bias'] < 0
@@ -191,7 +192,7 @@ def main(config):
             results_test['biasGrad'] = get_test_objective(test_pred_.scores > best_thresh, data, config)
             logger.info(f'Results test: {results_test["biasGrad"]}')
 
-        # Evaluate ROC
+        # Evaluate ROC post-processing
         if 'ROC' in config['models']:
             metric_map = {
                 'spd': 'Statistical parity difference',
@@ -218,7 +219,7 @@ def main(config):
             results_test['ROC'] = get_test_objective(y_pred, data, config)
             ROC = None
 
-        # Evaluate Equality of Odds
+        # Evaluate equality of odds post-processing
         if 'EqOdds' in config['models']:
             eqodds = EqOddsPostprocessing(privileged_groups=data.priv,
                                           unprivileged_groups=data.unpriv)
@@ -235,25 +236,25 @@ def main(config):
             results_test['EqOdds'] = get_test_objective(y_pred, data, config)
             eqodds = None
 
-        # Evaluate Random Perturbation Debiasing
+        # Evaluate random perturbation intra-processing
         if 'random' in config['models']:
              from algorithms.random import random_debiasing
              results_valid['random'], results_test['random'] = random_debiasing(model_state_dict, data,
                                                                                 config, device)
 
-        # Evaluate Adversarial Intra-processing
+        # Evaluate adversarial intra-processing
         if 'adversarial' in config['models']:
             from algorithms.adversarial import adversarial_debiasing
             results_valid['adversarial'], results_test['adversarial'] = adversarial_debiasing(model_state_dict, data,
                                                                                               config, device)
 
-        # Evaluate Adversarial In-processing
+        # Evaluate adversarial in-processing
         if 'mitigating' in config['models']:
             from algorithms.mitigating import mitigating_debiasing
             results_valid['mitigating'], results_test['mitigating'] = mitigating_debiasing(model_state_dict, data,
                                                                                            config, device)
 
-        # Save Results
+        # Save the results
         results_valid['config'] = config
         logger.info(f'Validation Results: {results_valid}')
         logger.info(f'Saving validation results to {config["experiment_name"]}_valid_output_{seed}.json')

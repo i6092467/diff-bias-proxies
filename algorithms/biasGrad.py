@@ -1,5 +1,5 @@
 """
-Bias gradient descent/ascent (GD/A) intra-processing algorithm.
+Bias gradient descent/ascent (GD/A) intra-processing algorithm
 """
 import os.path
 

@@ -1,5 +1,5 @@
 """
-Miscellaneous utility functions.
+Miscellaneous utility functions
 """
 import os
 
@@ -16,6 +16,7 @@ from tabulate import tabulate
 
 def tabulate_results(ex_name: str, seeds: np.ndarray, methods: np.ndarray, epsilon: float, method_names=None,
                      log_dir: str = None):
+    """Prints out the experiment's results in a tabular format"""
     if method_names is not None:
         assert len(method_names) == len(methods)
     else:
@@ -37,29 +38,22 @@ def tabulate_results(ex_name: str, seeds: np.ndarray, methods: np.ndarray, epsil
     for meth in methods:
         meth_bias = [results[str(s)][meth]['bias'] for s in seeds]
         meth_perf = [results[str(s)][meth]['performance'] for s in seeds]
-        meth_co = [results[str(s)][meth]['performance'] * (abs(results[str(s)][meth]['bias']) < epsilon) for s in seeds]
         my_table.append([method_names[cnt],
                          "{:1.3f}".format(np.round(np.mean(meth_bias), 3)) + \
                          ' +/- ' + "{:1.3f}".format(np.round(np.std(meth_bias), 3)),
                          "{:1.3f}".format(np.round(np.mean(meth_perf), 3)) + \
-                         ' +/- ' + "{:1.3f}".format(np.round(np.std(meth_perf), 3)),
-                         "{:1.3f}".format(np.round(np.median(meth_co), 3)) + \
-                         '  [' + "{:1.3f}".format(np.round(np.quantile(meth_co, 0.25), 3)) + \
-                         ', ' + "{:1.3f}".format(np.round(np.quantile(meth_co, 0.75), 3)) + ']',
-                         "{:1.3f}".format(np.round(np.mean(meth_co), 3)) + \
-                         ' +/- ' + "{:1.3f}".format(np.round(np.std(meth_co), 3))])
+                         ' +/- ' + "{:1.3f}".format(np.round(np.std(meth_perf), 3))])
         cnt += 1
-    headers = ['Method', 'Bias', 'Performance', 'Constr. Obj. IQ', 'Constr. Obj. SD']
+    headers = ['Method', 'Bias', 'Performance']
 
     print(tabulate(my_table, headers, tablefmt="github"))
 
 
 def set_seeds(seed):
-    # back to random seeds
+    """Fixes random seeds for the experiment replicability"""
     random.seed(seed)
     np.random.seed(seed)
 
-    # for cuda
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)

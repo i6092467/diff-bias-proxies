@@ -1,5 +1,8 @@
 """
-Data loaders for MIMIC-CXR
+Data loaders for the MIMIC-CXR dataset
+
+NOTE: raw data can be downloaded from https://physionet.org/content/mimic-cxr/2.0.0/. You will need to run the Jupyter
+notebook at notebooks/CXR_Mimic_Preprocessing.ipynb to pre-process the data
 """
 import torch
 
@@ -19,9 +22,10 @@ from sklearn.model_selection import train_test_split
 
 
 class ChestXRay_mimic_DatasetGenerator(Dataset):
-
+    """Chest X-ray Dataset object"""
     def __init__(self, imgs, img_list, label_list, attribute_list, transform,
                  class_names=['Enlarged Cardiomediastinum', 'No Finding']):
+        # NOTE: class_names is a list of class names for the positive and negative classes (in that exact order)
 
         self.listImageLabels = []
         self.listImageAttributes = []
@@ -29,7 +33,7 @@ class ChestXRay_mimic_DatasetGenerator(Dataset):
         imgLabel_cnt = np.zeros(len(class_names))
         self.imgs = imgs
 
-        # iterate over imgs
+        # Iterate over images and retrieve labels and protected attributes
         for i in range(len(img_list)):
 
             imageLabel = label_list.iloc[i]
@@ -47,6 +51,7 @@ class ChestXRay_mimic_DatasetGenerator(Dataset):
         print(imgLabel_cnt)
 
     def __getitem__(self, index):
+        # Gets an element of the dataset
 
         imageData = Image.fromarray(self.imgs[index]).convert('RGB')
 
@@ -56,6 +61,7 @@ class ChestXRay_mimic_DatasetGenerator(Dataset):
 
         if self.transform != None: imageData = self.transform(imageData)
 
+        # Return a tuple of images, labels, and protected attributes
         return imageData, image_label, image_attr
 
     def __len__(self):
@@ -66,6 +72,7 @@ class ChestXRay_mimic_DatasetGenerator(Dataset):
 def train_test_split_ChestXray_mimic(root_dir, prot_attr='gender', priv_class='M', unpriv_class='F',
                                      train_prot_ratio=0.75, seed=42,
                                      class_names=['Enlarged Cardiomediastinum', 'No Finding']):
+    """Performs train-validation-test split for the MIMIC-CXR dataset"""
     img_mat = np.load(root_dir + 'files_128.npy')
 
     df = pd.read_csv(root_dir + 'meta_data.csv')
@@ -136,9 +143,11 @@ def train_test_split_ChestXray_mimic(root_dir, prot_attr='gender', priv_class='M
            train_imgs, val_imgs, test_imgs
 
 
-def get_ChestXRay_mimic_dataloaders(device, root_dir, prot_attr='gender', priv_class='M', unpriv_class='F', train_prot_ratio=0.75,
-                                    class_names=['Enlarged Cardiomediastinum', 'No Finding'], batch_size=256,
-                                    num_workers=1, seed=42):
+def get_ChestXRay_mimic_dataloaders(device, root_dir, prot_attr='gender', priv_class='M', unpriv_class='F',
+                                    train_prot_ratio=0.75, class_names=['Enlarged Cardiomediastinum', 'No Finding'],
+                                    batch_size=256, num_workers=1, seed=42):
+    """Returns a dictionary of data loaders for the MIMIC-CXR dataset, for the training, validation, and test sets."""
+    # NOTE: class_names is a list of class names for the positive and negative classes (in that exact order)
     print('Using {} device'.format(device))
 
     set_seeds(seed)
@@ -193,4 +202,5 @@ def get_ChestXRay_mimic_dataloaders(device, root_dir, prot_attr='gender', priv_c
                                                   shuffle=True,
                                                   num_workers=num_workers) for x in ['train', 'val', 'test']}
 
+    # Return corresponding loaders and dataset sizes
     return dataloaders, dataset_sizes

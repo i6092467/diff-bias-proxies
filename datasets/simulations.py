@@ -1,5 +1,5 @@
 """
-Data loaders for synthetic data.
+Data loaders for synthetic data
 """
 import numpy as np
 
@@ -13,7 +13,7 @@ from aif360.datasets import StandardDataset
 
 
 def simulate_loh(n, effect_model='B1', alpha=1.0):
-    # Simulation based on the paper by Loh, Cao & Zhou; DOI https://doi.org/10.1002/widm.1326
+    """Simulation based on the paper by Loh et al. [DOI: https://doi.org/10.1002/widm.1326]"""
     X = np.zeros((n, 10))
 
     X[:, 0] = np.random.normal(loc=0, scale=1, size=(n, ))
@@ -57,7 +57,7 @@ def simulate_loh(n, effect_model='B1', alpha=1.0):
 
 
 def simulate_zafar_lin(n, theta=1.0, seed=42):
-    # Simulation based on the paper by Zafar, Valera, Rogriguez, and Gummadi; https://arxiv.org/abs/1507.05259
+    """Simulation based on the paper by Zafar et al. [https://arxiv.org/abs/1507.05259]"""
     np.random.seed(seed)
 
     rot_mat = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
@@ -86,6 +86,7 @@ def simulate_zafar_lin(n, theta=1.0, seed=42):
 
 
 def simulate_zafar_nlin(n, theta=1.0, seed=42):
+    """A nonlinear extension of the simulation by Zafar et al. [https://arxiv.org/abs/1507.05259]"""
     X_tilde, Z, Y = simulate_zafar_lin(n=n, theta=theta, seed=seed)
 
     dec = random_nonlin_map(n_in=2, n_out=500, n_hidden=100, rank=50)
@@ -96,6 +97,7 @@ def simulate_zafar_nlin(n, theta=1.0, seed=42):
 
 
 class SyntheticZafarDataset(StandardDataset):
+    """ Zafar et al. Dataset"""
     def __init__(self, label_name='Y', favorable_classes=[1],
                  protected_attribute_names=['Z'],
                  privileged_classes=[[1]],
@@ -127,7 +129,7 @@ class SyntheticZafarDataset(StandardDataset):
 
 
 class SyntheticLohDataset(StandardDataset):
-
+    """Loh et al. Dataset"""
     def __init__(self, label_name='Y', favorable_classes=[1],
                  protected_attribute_names=['Z'],
                  privileged_classes=[[1]],

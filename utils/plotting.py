@@ -1,5 +1,5 @@
 """
-Utility functions for plotting.
+Utility functions for plotting
 """
 import os
 
@@ -13,7 +13,7 @@ CB_COLOR_CYCLE = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea
 
 
 def plotting_setup(font_size=12):
-    # plot settings
+    """Plotting settings"""
     plt.style.use("seaborn-colorblind")
     plt.rcParams['font.size'] = font_size
     rc('text', usetex=False)
@@ -23,6 +23,7 @@ def plotting_setup(font_size=12):
 
 def plot_pruning_trajectories_ave(log_dir: str, exp_name: str, seeds: list, n_steps: int, bias_name: str,
                                   perf_name: str, dir: str = None, legend: bool = False, font_size: int = 16):
+    """Plots average debiasing traces with confidnce bounds"""
     n_runs = len(seeds)
     objectives = np.zeros((n_runs, n_steps))
     biases = np.zeros((n_runs, n_steps))
@@ -46,6 +47,7 @@ def plot_pruning_trajectories_ave(log_dir: str, exp_name: str, seeds: list, n_st
 def plot_pruning_trajectories_multi(log_dir: str, exp_name: str, seeds: list, n_steps: int, bias_name: str,
                                     perf_name: str, dir: str = None, legend: bool = False, legend_outside: bool = True,
                                     font_size: int = 16, xlab: str = None):
+    """Plots debiasing traces alongside the median"""
     n_runs = len(seeds)
     objectives = np.ones((n_runs, n_steps)) * 0.5
     biases = np.zeros((n_runs, n_steps))
@@ -102,6 +104,7 @@ def plot_pruning_trajectories_multi(log_dir: str, exp_name: str, seeds: list, n_
 
 def plot_curves_with_ci(xs, avgs, lower, upper, labels, xlab, ylab, font_size=16, baseline=None, baseline_lab=None,
                         baseline_cl=None, dir=None, legend=True, legend_outside=True, cls=None):
+    """Plots curves with confidence intervals"""
     plotting_setup(font_size)
 
     fig = plt.figure()
@@ -146,6 +149,7 @@ def plot_curves_with_ci(xs, avgs, lower, upper, labels, xlab, ylab, font_size=16
 
 def plot_pruning_results(n_pruned: list, total_n_units: int, objective: list, bias_metric: list, pred_performance: list,
                          j_best: int, seed: int, config: dict, suffix='', display=False):
+    """Plots pruning results"""
     fig = plt.figure()
     plt.plot(np.array(n_pruned) / total_n_units * 100., objective,
              label='Constrained Objective')

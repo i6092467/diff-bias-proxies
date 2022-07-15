@@ -1,5 +1,5 @@
 """
-Network architectures and training scheme for MIMIC-CXR.
+Network architectures and training procedures for MIMIC-CXR
 """
 import time
 
@@ -19,7 +19,7 @@ from torchvision import models
 
 
 class ChestXRayResNet18(nn.Module):
-
+    """ResNet-18"""
     def __init__(self, pretrained=True):
         super().__init__()
         self.resnet18 = models.resnet18(pretrained=pretrained)
@@ -35,7 +35,7 @@ class ChestXRayResNet18(nn.Module):
 
 
 class ChestXRayVGG16(nn.Module):
-
+    """VGG-16"""
     def __init__(self, pretrained=True):
         super().__init__()
         self.vgg16 = models.vgg16(pretrained=pretrained)
@@ -51,7 +51,7 @@ class ChestXRayVGG16(nn.Module):
 
 
 class ChestXRayVGG16Masked(nn.Module):
-
+    """VGG-16 with masks applied to the specified layers. Used in pruning"""
     def __init__(self, base_model: ChestXRayVGG16, prunable_layers, start_idx, end_idx):
         super().__init__()
         self.all_layers = get_children(base_model)
@@ -90,9 +90,9 @@ class ChestXRayVGG16Masked(nn.Module):
                         cnt_ += t.shape[1] * t.shape[2] * t.shape[3]
                         cnt += 1
                     else:
-                        pass
+                        NotImplementedError('ERROR: layer type not supported for masking!')
 
-            # Apply ReLU activation to the VGG features
+            # Apply ReLU activation to the features
             if i == len(self.all_layers) - 2:
                 t = torch.relu(t)
 
@@ -130,7 +130,7 @@ class ChestXRayVGG16Masked(nn.Module):
                         cnt_ += t.shape[1] * t.shape[2] * t.shape[3]
                         cnt += 1
                     else:
-                        pass
+                        NotImplementedError('ERROR: layer type not supported for masking!')
 
             # Apply ReLU activation to the VGG features
             if i == len(self.all_layers) - 2:
@@ -140,7 +140,7 @@ class ChestXRayVGG16Masked(nn.Module):
 
 
 class ChestXRayResNet18Masked(nn.Module):
-
+    """ResNet-18 with masks applied to the specified layers. Used in pruning"""
     def __init__(self, base_model: ChestXRayResNet18, prunable_layers, start_idx, end_idx):
         super().__init__()
         self.all_layers = [base_model.resnet18.conv1, base_model.resnet18.bn1, base_model.resnet18.relu,
@@ -159,8 +159,11 @@ class ChestXRayResNet18Masked(nn.Module):
     def forward(self, t, pruned=None):
         cnt = 0
         cnt_ = 0
+
         for (i, l) in enumerate(self.all_layers):
             t = l(t)
+
+            # If the layer is in the list, prune given units
             if l in self.prunable_layers:
                 if pruned is not None:
                     pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
@@ -183,9 +186,11 @@ class ChestXRayResNet18Masked(nn.Module):
                     else:
                         pass
 
+            # Apply ReLU activation to the ResNet-18 features
             if i == len(self.all_layers) - 2:
                 t = torch.relu(t)
 
+            # Flatten for the fully connected layers
             if i == len(self.all_layers) - 3:
                 t = torch.flatten(t, 1)
 
@@ -194,8 +199,11 @@ class ChestXRayResNet18Masked(nn.Module):
     def trunc_forward(self, t, pruned=None):
         cnt = 0
         cnt_ = 0
+
         for (i, l) in enumerate(self.all_layers):
             t = l(t)
+
+            # If the layer is in the list, prune given units
             if l in self.prunable_layers:
                 if pruned is not None:
                     pruned_structs = pruned[np.logical_and(self.start_idx[cnt] <= pruned,
@@ -218,24 +226,39 @@ class ChestXRayResNet18Masked(nn.Module):
                     else:
                         pass
 
+            # Apply ReLU activation to the ResNet-18 features
             if i == len(self.all_layers) - 2:
                 t = torch.relu(t)
 
+            # Flatten for the fully connected layers
             if i == len(self.all_layers) - 3:
                 t = torch.flatten(t, 1)
 
         return t
 
 
+def get_layers_to_prune_ResNet18(model: ChestXRayResNet18):
+    """Returns a list of layers to prune for the ResNet-18 model"""
+    # NOTE: adjust the list to prune more/other layers
+    layers = [model.resnet18.conv1]
+    return layers
+
+
+def get_layers_to_prune_VGG16(model: ChestXRayVGG16):
+    """Returns a list of layers to prune for the VGG-16 model"""
+    # NOTE: adjust the list to prune more/other layers
+    layers = [model.vgg16.features[i] for i in range(len(model.vgg16.features)) if isinstance(model.vgg16.features[i],
+                                                                                              nn.Conv2d)]
+    return layers
+
+
 def get_children(model: torch.nn.Module):
-    # get children from model!
+    """A utility function returning all the children modules of the specified module"""
     children = list(model.children())
     flatt_children = []
     if children == []:
-        # if model has no children; model is last child! :O
         return model
     else:
-        # look for children from children... to the last child!
         for child in children:
             try:
                 flatt_children.extend(get_children(child))
@@ -244,20 +267,10 @@ def get_children(model: torch.nn.Module):
     return flatt_children
 
 
-def get_layers_to_prune_ResNet18(model: ChestXRayResNet18):
-    layers = [model.resnet18.conv1]
-    return layers
-
-
-def get_layers_to_prune_VGG16(model: ChestXRayVGG16):
-    # Return all conv layers
-    layers = [model.vgg16.features[i] for i in range(len(model.vgg16.features)) if isinstance(model.vgg16.features[i],
-                                                                                              nn.Conv2d)]
-    return layers
-
-
 def train_ChestXRay_model(dataloaders, dataset_sizes, model, criterion, optimizer, scheduler, device,
                           class_names=['Pneumothorax', 'No Finding'], bias_metric='spd', batch_size=256, num_epochs=25):
+    """Training procedure for the standard MIMIC-CXR classifier"""
+    # NOTE: class_names is a list of class names for the positive and negative classes (in that exact order)
     since = time.time()
 
     # Best model parameters
@@ -375,7 +388,7 @@ def train_ChestXRay_model(dataloaders, dataset_sizes, model, criterion, optimize
 
 
 class Critic(nn.Module):
-    """Critic class for adversarial debiasing method"""
+    """Critic model for the adversarial intra-processing technique by Savani et al. (2020)"""
 
     def __init__(self, sizein, num_deep=3, hid=32):
         super().__init__()

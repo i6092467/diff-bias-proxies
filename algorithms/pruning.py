@@ -1,5 +1,5 @@
 """
-Pruning intra-processing algorithm.
+Pruning intra-processing algorithm
 """
 import os.path
 
