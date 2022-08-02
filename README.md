@@ -158,9 +158,9 @@ To better understand the background behind this work, we recommend reading the f
 Please cite our paper and repository as
 ```
 @misc{Marcinkevics2022,
-  author = {Marcinkevi\v{c}s, Ri\v{c}ards and Ozkan, Ece and Vogt, Julia E.},
-  title = {Debiasing Neural Networks using Differentiable Classification Parity Proxies},
-  year = {2022},
-  note = {ICLR 2022 Workshop on Socially Responsible Machine Learning (SRML)}
+  Author = {Ri\v{c}ards Marcinkevi\v{c}s and Ece Ozkan and Julia E. Vogt},
+  Title = {Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods},
+  Year = {2022},
+  Note = {arXiv:2208.00781},
 }
 ```
