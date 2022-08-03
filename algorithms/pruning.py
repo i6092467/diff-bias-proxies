@@ -279,7 +279,7 @@ def prune_fc(model, data, config, seed, plot=False, display=False, verbose=1):
     # Evaluate all metrics using the best threshold
     obj_dict = get_objective((valid_pred_scores > best_thresh) * 1., data.y_valid.numpy(), data.p_valid,
                              config['metric'], config['objective']['sharpness'],
-                             config['objective']['epsilon'] - config['pruning']['margin'])
+                             config['objective']['epsilon'])
     asc = obj_dict['bias'] < 0
 
     # Create hooks to get layer activations from the model
@@ -361,7 +361,7 @@ def prune_fc(model, data, config, seed, plot=False, display=False, verbose=1):
             # Evaluate all metrics using the best threshold
             obj_dict = get_objective((valid_pred_scores > best_thresh) * 1., data.y_valid.numpy(), data.p_valid,
                                      config['metric'], config['objective']['sharpness'],
-                                     config['objective']['epsilon'] - config['pruning']['margin'])
+                                     config['objective']['epsilon'])
 
             objective.append(obj_dict['objective'])
             bias_metric.append(obj_dict['bias'])
