@@ -1,6 +1,6 @@
 # Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods
 
-This repository holds the official code for the paper "*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*" presented at the [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/) and accepted at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/). A short explanation of the method is provided in this [contributed talk](https://youtu.be/Kw3Cf7XxzNs); poster can be viewed [here](documents/DiffBiasProxies_poster_SRML_ICLR_2022.pdf).
+This repository holds the official code for the paper "*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*" presented at the [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/) and accepted at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/). A short explanation of the method is provided in this [spotlight talk](https://www.youtube.com/watch?v=3gfIawh-3vs); poster can be viewed [here](documents/Debiasing_Intra-_and_Post-processing_MLHC_2022_poster.pdf).
 
 <p align="center">
   <img align="middle" src="figures/setting_summary.png" alt="Intra-processing scenario" width="350"/>
@@ -158,9 +158,9 @@ To better understand the background behind this work, we recommend reading the f
 Please cite our paper and repository as
 ```
 @misc{Marcinkevics2022,
-  author = {Marcinkevi\v{c}s, Ri\v{c}ards and Ozkan, Ece and Vogt, Julia E.},
-  title = {Debiasing Neural Networks using Differentiable Classification Parity Proxies},
-  year = {2022},
-  note = {ICLR 2022 Workshop on Socially Responsible Machine Learning (SRML)}
+  Author = {Ri\v{c}ards Marcinkevi\v{c}s and Ece Ozkan and Julia E. Vogt},
+  Title = {Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods},
+  Year = {2022},
+  Note = {arXiv:2208.00781},
 }
 ```
