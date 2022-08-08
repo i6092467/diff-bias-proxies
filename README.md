@@ -1,6 +1,6 @@
 # Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods
 
-This repository holds the official code for the paper "*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*" presented at the [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/) and accepted at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/). A short explanation of the method is provided in this [spotlight talk](https://www.youtube.com/watch?v=3gfIawh-3vs); poster can be viewed [here](documents/Debiasing_Intra-_and_Post-processing_MLHC_2022_poster.pdf).
+This repository holds the official code for the paper "*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*" presented at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/) and [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/). A short explanation of the method is provided in this [spotlight talk](https://www.youtube.com/watch?v=3gfIawh-3vs); poster can be viewed [here](documents/Debiasing_Intra-_and_Post-processing_MLHC_2022_poster.pdf).
 
 <p align="center">
   <img align="middle" src="figures/setting_summary.png" alt="Intra-processing scenario" width="350"/>
