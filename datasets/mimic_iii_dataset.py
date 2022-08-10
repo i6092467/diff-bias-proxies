@@ -14,8 +14,10 @@ from aif360.datasets import StandardDataset
 
 def default_preprocessing(df):
     """Remove missing values for the dataframe."""
-    df.loc[(df['marital_status'] != 'MARRIED') & (df['marital_status'] != 'SINGLE'), 'marital_status'] = 1
-    df.loc[(df['marital_status'] == 'MARRIED') | (df['marital_status'] == 'SINGLE'), 'marital_status'] = 0
+    df.loc[df['age'] < 78, 'age'] = 0
+    df.loc[df['age'] >= 78, 'age'] = 1
+    df.loc[(df['marital_status'] != 'SINGLE'), 'marital_status'] = 1
+    df.loc[(df['marital_status'] == 'SINGLE'), 'marital_status'] = 0
     df.loc[df['gender'] == 'M', 'gender'] = 0
     df.loc[df['gender'] == 'F', 'gender'] = 1
     df.loc[(df['insurance'] != 'Medicare') & (df['insurance'] != 'Medicaid'), 'insurance'] = 1

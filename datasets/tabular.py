@@ -87,20 +87,39 @@ def get_data(dataset, protected_attribute, seed=101, config=None):
 
     elif dataset == 'mimic':
         from datasets.mimic_iii_dataset import MimicDataset
-        dataset_orig = MimicDataset()
         if protected_attribute == 'age':
+            dataset_orig = MimicDataset(
+                protected_attribute_names=['age'],  features_to_drop=
+                ['1_day_mort', '2_day_mort', '3_day_mort', '30_day_mort', '1_year_mort', 'religion', 'gender',
+                 'marital_status', 'ethnicity', 'insurance'])
             privileged_groups = [{'age': 0}]
             unprivileged_groups = [{'age': 1}]
         elif protected_attribute == 'marital_status':
+            dataset_orig = MimicDataset(
+                protected_attribute_names=['marital_status'], features_to_drop=
+                ['1_day_mort', '2_day_mort', '3_day_mort', '30_day_mort', '1_year_mort', 'religion', 'gender',
+                 'ethnicity', 'insurance'])
             privileged_groups = [{'marital_status': 0}]
             unprivileged_groups = [{'marital_status': 1}]
         elif protected_attribute == 'gender':
+            dataset_orig = MimicDataset(
+                protected_attribute_names=['gender'], features_to_drop=
+                ['1_day_mort', '2_day_mort', '3_day_mort', '30_day_mort', '1_year_mort', 'religion',
+                 'marital_status', 'ethnicity', 'insurance'])
             privileged_groups = [{'gender': 0}]
             unprivileged_groups = [{'gender': 1}]
         elif protected_attribute == 'insurance':
+            dataset_orig = MimicDataset(
+                protected_attribute_names=['insurance'], features_to_drop=
+                ['1_day_mort', '2_day_mort', '3_day_mort', '30_day_mort', '1_year_mort', 'religion',
+                 'marital_status', 'ethnicity', 'gender'])
             privileged_groups = [{'insurance': 0}]
             unprivileged_groups = [{'insurance': 1}]
         elif protected_attribute == 'ethnicity':
+            dataset_orig = MimicDataset(
+                protected_attribute_names=['ethnicity'], features_to_drop=
+                ['1_day_mort', '2_day_mort', '3_day_mort', '30_day_mort', '1_year_mort', 'religion',
+                 'marital_status', 'insurance', 'gender'])
             privileged_groups = [{'ethnicity': 0}]
             unprivileged_groups = [{'ethnicity': 1}]
         else:
