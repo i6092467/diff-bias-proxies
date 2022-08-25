@@ -134,6 +134,8 @@ Folder [`/algorithms`](algorithms/) contains implementation of the debiasing pro
 
 Further details are documented within the code.
 
+🆘 **Feeling lost or want a concrete example?** You might find [this demo Jupyter notebook](https://github.com/i6092467/diff-bias-proxies/blob/main/notebooks/Debiasing_Demo.ipynb) useful! 
+
 ### 🙏 Acknowledgements
 - The code structure is based on the [repository](https://github.com/abacusai/intraprocessing_debiasing) by [Savani et al. (2020)](https://arxiv.org/abs/2006.08564)
 - For MIMIC-III, we used the pre-processing based on the [code](https://github.com/USC-Melady/Benchmarking_DL_MIMICIII) by [Purushotham et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1532046418300716)
