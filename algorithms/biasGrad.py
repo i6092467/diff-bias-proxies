@@ -81,8 +81,14 @@ def plot_results(step_num: np.ndarray, objective: list, bias_metric: list, pred_
 def save_finetuning_trajectory(results: dict, seed: int, config: dict):
     """Saves traces of the bias, performance, and constrained objective during fine-tuning in a .csv file"""
     arr = np.stack((results['objective'], results['bias'], results['perf']), axis=1)
-    np.savetxt(fname=os.path.join('results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
-                                                            '_trajectory' + '.csv'), X=arr)
+    if os.path.exists('results/logs/'):
+        np.savetxt(fname=os.path.join('results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
+                                                                '_trajectory' + '.csv'), X=arr)
+    elif os.path.exists('bin/results/logs/'):
+        np.savetxt(fname=os.path.join('bin/results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
+                                                                 '_trajectory' + '.csv'), X=arr)
+    else:
+        print('WARNING: log directory is missing!')
 
 
 def bias_gradient_decent(model: nn.Module, data, config: dict, seed: int, asc: bool = False, plot: bool = False,

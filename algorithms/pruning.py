@@ -54,8 +54,14 @@ def choose_best_thresh_bal_acc_(y_valid: np.ndarray, valid_pred_scores: np.ndarr
 def save_pruning_trajectory(results: dict, seed: int, config: dict):
     """Saves traces of the bias, performance, and constrained objective during fine-tuning in a .csv file"""
     arr = np.stack((results['objective'], results['bias'], results['perf']), axis=1)
-    np.savetxt(fname=os.path.join('results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
-                                                         '_trajectory' + '.csv'), X=arr)
+    if os.path.exists('results/logs/'):
+        np.savetxt(fname=os.path.join('results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
+                                                             '_trajectory' + '.csv'), X=arr)
+    elif os.path.exists('bin/results/logs/'):
+        np.savetxt(fname=os.path.join('bin/results/logs/') + str(config['experiment_name'] + '_' + str(seed) +
+                                                             '_trajectory' + '.csv'), X=arr)
+    else:
+        print('WARNING: log directory is missing!')
 
 
 def install_hooks_fc(model: nn.Module):
