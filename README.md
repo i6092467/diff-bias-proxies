@@ -159,7 +159,6 @@ To better understand the background behind this work, we recommend reading the f
 
 Please cite our paper and repository as
 ```
-
 @InProceedings{Marcinkevics2022,
   title = 	 {Debiasing Deep Chest {X}-Ray Classifiers using Intra- and Post-processing Methods},
   author =       {Marcinkevics, Ricards and Ozkan, Ece and Vogt, Julia E.},
@@ -174,5 +173,4 @@ Please cite our paper and repository as
   pdf = 	 {https://proceedings.mlr.press/v182/marcinkevics22a/marcinkevics22a.pdf},
   url = 	 {https://proceedings.mlr.press/v182/marcinkevics22a.html},
 }
-
 ```
