@@ -1,6 +1,6 @@
 # Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods
 
-This repository holds the official code for the paper "*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*" presented at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/), and [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/). A short explanation of the method is provided in this [spotlight talk](https://www.youtube.com/watch?v=3gfIawh-3vs); poster can be viewed [here](documents/Debiasing_Intra-_and_Post-processing_MLHC_2022_poster.pdf).
+This repository holds the official code for the paper ["*Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods*"](https://proceedings.mlr.press/v182/marcinkevics22a.html) presented at the [the 7<sup>th</sup> Machine Learning for Healtcare Conference (MLHC), 2022](https://www.mlforhc.org/), and [ICLR 2022 Workshop on Socially Responsible Machine Learning](https://iclrsrml.github.io/). A short explanation of the method is provided in this [spotlight talk](https://www.youtube.com/watch?v=3gfIawh-3vs); poster can be viewed [here](documents/Debiasing_Intra-_and_Post-processing_MLHC_2022_poster.pdf).
 
 <p align="center">
   <img align="middle" src="figures/setting_summary.png" alt="Intra-processing scenario" width="350"/>
@@ -159,10 +159,20 @@ To better understand the background behind this work, we recommend reading the f
 
 Please cite our paper and repository as
 ```
-@misc{Marcinkevics2022,
-  Author = {Ri\v{c}ards Marcinkevi\v{c}s and Ece Ozkan and Julia E. Vogt},
-  Title = {Debiasing Deep Chest X-Ray Classifiers using Intra- and Post-processing Methods},
-  Year = {2022},
-  Note = {arXiv:2208.00781},
+
+@InProceedings{Marcinkevics2022,
+  title = 	 {Debiasing Deep Chest {X}-Ray Classifiers using Intra- and Post-processing Methods},
+  author =       {Marcinkevics, Ricards and Ozkan, Ece and Vogt, Julia E.},
+  booktitle = 	 {Proceedings of the 7th Machine Learning for Healthcare Conference},
+  pages = 	 {504--536},
+  year = 	 {2022},
+  editor = 	 {Lipton, Zachary and Ranganath, Rajesh and Sendak, Mark and Sjoding, Michael and Yeung, Serena},
+  volume = 	 {182},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {05--06 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v182/marcinkevics22a/marcinkevics22a.pdf},
+  url = 	 {https://proceedings.mlr.press/v182/marcinkevics22a.html},
 }
+
 ```
