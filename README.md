@@ -165,7 +165,8 @@ Please cite our paper and repository as
   booktitle = 	 {Proceedings of the 7th Machine Learning for Healthcare Conference},
   pages = 	 {504--536},
   year = 	 {2022},
-  editor = 	 {Lipton, Zachary and Ranganath, Rajesh and Sendak, Mark and Sjoding, Michael and Yeung, Serena},
+  editor = 	 {Lipton, Zachary and Ranganath, Rajesh and Sendak, Mark 
+                    and Sjoding, Michael and Yeung, Serena},
   volume = 	 {182},
   series = 	 {Proceedings of Machine Learning Research},
   month = 	 {05--06 Aug},
