@@ -345,8 +345,7 @@ def train_ChestXRay_model(dataloaders, dataset_sizes, model, criterion, optimize
                 scheduler.step()
 
             # Get the predictive performance metrics
-            auroc, avg_precision, balanced_acc, f1_acc = compute_accuracy_metrics(probs_mat, preds_vec, labels_vec,
-                                                                                  class_names)
+            auroc, avg_precision, balanced_acc, f1_acc = compute_accuracy_metrics(preds_vec, labels_vec)
             if phase == 'val':
                 bias = compute_empirical_bias(preds_vec, labels_vec, priv, bias_metric)
                 print('Bias:', bias)
